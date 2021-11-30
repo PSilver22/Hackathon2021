@@ -10,5 +10,6 @@ namespace Data_Structures
     {
         public Car CarInStation { get; set; }
         public int ID { get; set; }
+        public double ChargingRatePerHour { get; set; }
     }
 }
