@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using Data_Structures;
-using Scheduler;
+using Scheduler_ns;
 
 namespace Main_Window
 {
@@ -23,16 +23,24 @@ namespace Main_Window
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow main;
+
         private static List<Car> chargingCars = new();
-        private static int maxSize = 0;
-        
+        private static int numChargingStations = 0;
         private static Mutex chargingStationsMutex = new Mutex();
+        private static double chargeRate = 0;
+        private static double chargeGoal;
+
+        private static Thread? timeThread;
 
         private List<Employee> employees = new();
 
         public MainWindow()
         {
             InitializeComponent();
+            main = this;
+
+            timeThread = new Thread(() => TimeFunction());
 
             //ListBoxItem newItem = new ListBoxItem();
             //StackPanel newItemContent = new StackPanel();
@@ -62,17 +70,40 @@ namespace Main_Window
             car.LicensePlateNumber = int.Parse(LicensePlate.Text);
             car.ItsBattery = battery;
 
-            Employee Employee = new();
-            Employee.Name = Name.Text;
-            Employee.ItsCar = car;
+            Employee employee = new();
+            employee.Name = Name.Text;
+            employee.ItsCar = car;
 
-            employees.Add(Employee);
+            employees.Add(employee);
         }
 
-        private void CreateListBoxItem(string text, string buttonText, RoutedEventHandler clickEvent)
+        private static void TimeFunction() {
+            while (true)
+            {
+                Thread.Sleep(1000);
+
+                if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoal)
+                {
+                    Scheduler.GetLowestBatterylevelCars(Scheduler.)
+                }
+
+                chargingStationsMutex.WaitOne();
+                foreach (Car car in chargingCars)
+                {
+                    if (car != null)
+                    {
+                        car.ItsBattery.CurrentLevel = Math.Max(car.ItsBattery.Capacity, car.ItsBattery.CurrentLevel + (chargeRate / 60));
+                    }
+                }
+                chargingStationsMutex.ReleaseMutex();
+            }
+        }
+
+        private void CreateListBoxItem(ListBox list, string text, string buttonId, string buttonText, RoutedEventHandler clickEvent)
         {
             Button button = new();
             button.Content = buttonText;
+            button.Uid = buttonId;
             button.Click += clickEvent;
 
             Label label = new();
@@ -85,7 +116,14 @@ namespace Main_Window
             ListBoxItem listBoxItem = new();
             listBoxItem.Content = stackPanel;
 
-            UpdatedEmployees.Items.Add(listBoxItem);
+            list.Items.Add(listBoxItem);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            timeThread.Join();
+
+            base.OnClosed(e);
         }
     }
 }

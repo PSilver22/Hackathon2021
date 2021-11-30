@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Data_Structures;
 
-namespace Scheduler
+namespace Scheduler_ns
 {
     public class Scheduler
     {
@@ -12,12 +12,12 @@ namespace Scheduler
 
             cars.Sort((Car x, Car y) => (int)(x.ItsBattery.CurrentLevel - y.ItsBattery.CurrentLevel));
 
-            List<Car> bottomHalf = getLowestBatterylevelCars(cars, numOfStations);
+            List<Car> bottomHalf = GetLowestBatterylevelCars(cars, numOfStations);
 
-            return bottomHalf;            
+            return bottomHalf;
         }
 
-        public static List<Car> getLowestBatterylevelCars(List<Car> cars, int sizeOfList)
+        public static List<Car> GetLowestBatterylevelCars(List<Car> cars, int sizeOfList)
         {
             List<Car> lowerHalf = new List<Car>(cars);
             lowerHalf.RemoveRange(sizeOfList + 1, cars.Count - sizeOfList);
@@ -25,7 +25,7 @@ namespace Scheduler
             return lowerHalf;
         }
 
-        public static List<Car> getUpperHalfCars(List<Car> cars, int sizeOfLowerHalf)
+        public static List<Car> GetUpperHalfCars(List<Car> cars, int sizeOfLowerHalf)
         {
             List<Car> upperRange = new List<Car>(cars);
             upperRange.RemoveRange(0, sizeOfLowerHalf);
@@ -33,7 +33,7 @@ namespace Scheduler
             return upperRange;
         }
 
-        public static double getAverageBatteryPercentage(List<Car> cars)
+        public static double GetAverageBatteryPercentage(List<Car> cars)
         {
             double average = 0;
             foreach (Car car in cars)
