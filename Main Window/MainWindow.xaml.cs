@@ -79,6 +79,10 @@ namespace Main_Window
             employee.ItsCar = car;
 
             employees.Add(employee);
+
+            LicensePlate.Text = "License Plate #";
+            BatteryCapacity.Text = "Battery Capacity";
+            CurrentBattery.Text = "Current Batery";
         }
 
         private void UnplugButton_Click(object sender, RoutedEventArgs e)
