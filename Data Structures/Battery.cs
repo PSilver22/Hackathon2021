@@ -11,6 +11,12 @@ namespace Data_Structures
         public double Capacity { get; set; }
         public double CurrentLevel { get; set; }
 
+        /// <summary>
+        /// returns the battery level after charging for the given amount of time
+        /// </summary>
+        /// <param name="endTime"></param>
+        /// <param name="chargeRate"></param>
+        /// <returns></returns>
         public double GetNewCharge(DateTime endTime, double chargeRate){
             int chargeTime = (DateTime.Now - endTime).Minutes;
 

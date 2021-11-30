@@ -62,11 +62,11 @@ namespace Main_Window
             car.LicensePlateNumber = int.Parse(LicensePlate.Text);
             car.ItsBattery = battery;
 
-            Employee Employee = new();
-            Employee.Name = Name.Text;
-            Employee.ItsCar = car;
+            Employee employee = new();
+            employee.Name = Name.Text;
+            employee.ItsCar = car;
 
-            employees.Add(Employee);
+            employees.Add(employee);
         }
 
         private void CreateListBoxItem(string text, string buttonText, RoutedEventHandler clickEvent)
@@ -87,5 +87,18 @@ namespace Main_Window
 
             UpdatedEmployees.Items.Add(listBoxItem);
         }
+
+        private List<Car> CarList()
+        {
+            List<Car> cars = new();
+            
+            foreach(Employee employee in employees)
+            {
+                cars.Add(employee.ItsCar);
+            }
+
+            return cars;
+        }
+
     }
 }
