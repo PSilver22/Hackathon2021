@@ -16,7 +16,7 @@
         <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" Height="20" Width="120" Margin="811,0,69,400" MaxLines="1"/>
         <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" Height="20" Width="120" Margin="811,0,69,350" MaxLines="1"/>
         <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,300" MaxLines="1"/>
-        <Button Name="AddButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120" Click="AddEmployeeButton_Click"/>
+        <Button Name="AddEmployeeButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120" Click="AddEmployeeButton_Click"/>
         <Label Content="Time: 00:00" Height="25" Width="100" Margin="1090,625,0,0"/>
     </Grid>
 </Window>
