@@ -25,15 +25,18 @@ namespace Main_Window
     {
         public static MainWindow main;
 
-        private static List<Car> chargingCars = new();
-        private static int numChargingStations = 0;
+        private static List<Employee> chargingEmployees = new();
+        private static int numChargingStations = 3;
         private static Mutex chargingStationsMutex = new Mutex();
-        private static double chargeRate = 0;
-        private static double chargeGoal;
+        private static double chargeRate = 1;
+        private static double chargeGoalPercentage = 10;
+
+        private static Mutex waitingEmployeesMutex = new Mutex();
+        private static List<Employee> awaitingUpdateEmployees = new();
 
         private static Thread? timeThread;
 
-        private List<Employee> employees = new();
+        private static List<Employee> employees = new();
 
         public MainWindow()
         {
@@ -42,6 +45,7 @@ namespace Main_Window
 
             timeThread = new Thread(() => TimeFunction());
 
+            timeThread.Start();
             //ListBoxItem newItem = new ListBoxItem();
             //StackPanel newItemContent = new StackPanel();
 
@@ -77,14 +81,63 @@ namespace Main_Window
             employees.Add(employee);
         }
 
+        private void UnplugButton_Click(object sender, RoutedEventArgs e)
+        {
+            chargingEmployees = (List<Employee>)chargingEmployees.Where(e => e.Name != ((Button)sender).Name);
+
+            waitingEmployeesMutex.WaitOne();
+            awaitingUpdateEmployees.Where(e => e.Name != ((Button)sender).Name);
+            waitingEmployeesMutex.ReleaseMutex();
+        }
+
+        private void PlugInButton_Click(object sender, RoutedEventArgs e) {
+            Employee? newChargeEmployee = employees.Find(e => e.Name == ((Button) sender).Name);
+
+            if (newChargeEmployee != null) {
+                chargingEmployees.Add(newChargeEmployee);
+
+                waitingEmployeesMutex.WaitOne();
+                awaitingUpdateEmployees.Remove(newChargeEmployee);
+                waitingEmployeesMutex.ReleaseMutex();
+            }
+        }
+
         private static void TimeFunction() {
+
             while (true)
             {
                 Thread.Sleep(1000);
 
-                if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoal)
+                List<Car> chargingCars = GetCarList(chargingEmployees);
+                if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoalPercentage)
                 {
-                    Scheduler.GetLowestBatterylevelCars(Scheduler.)
+                    List<Car> possibleChanges = Scheduler.GetLowestBatterylevelCars(GetCarList(employees), numChargingStations);
+
+                    foreach (Employee chargingEmployee in chargingEmployees) {
+                        if (!possibleChanges.Contains(chargingEmployee.ItsCar) && !WaitingForUpdate(chargingEmployee)) {
+                            main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, chargingEmployee.Name, "Unplug", new RoutedEventHandler(main.UnplugButton_Click)));
+
+                            waitingEmployeesMutex.WaitOne();
+                            awaitingUpdateEmployees.Add(chargingEmployee);
+                            waitingEmployeesMutex.ReleaseMutex();
+                        }
+                    }
+                }
+
+                if (chargingCars.Count < numChargingStations && chargingCars.Count < employees.Count) {
+                    double? minEmployeeCharge = employees.Min(e => (chargingCars.Contains(e.ItsCar)) ? null : e.ItsCar.ItsBattery.CurrentPercentage);
+
+                    if (minEmployeeCharge is not null) {
+                        Employee promptEmployee = employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge).First();
+
+                        if (!WaitingForUpdate(promptEmployee)) {
+                            main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, promptEmployee.Name, "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
+
+                            waitingEmployeesMutex.WaitOne();
+                            awaitingUpdateEmployees.Add(promptEmployee);
+                            waitingEmployeesMutex.ReleaseMutex();
+                        }
+                    }
                 }
 
                 chargingStationsMutex.WaitOne();
@@ -92,19 +145,18 @@ namespace Main_Window
                 {
                     if (car != null)
                     {
-                        car.ItsBattery.CurrentLevel = Math.Max(car.ItsBattery.Capacity, car.ItsBattery.CurrentLevel + (chargeRate / 60));
+                        car.ItsBattery.CurrentLevel = Math.Max(chargeGoalPercentage, car.ItsBattery.CurrentLevel + (chargeRate / 60));
                     }
                 }
                 chargingStationsMutex.ReleaseMutex();
             }
-            employees.Add(employee);
         }
 
-        private void CreateListBoxItem(ListBox list, string text, string buttonId, string buttonText, RoutedEventHandler clickEvent)
+        private static void CreateListBoxItem(ListBox list, string text, string buttonText, RoutedEventHandler clickEvent)
         {
             Button button = new();
             button.Content = buttonText;
-            button.Uid = buttonId;
+            button.Name = text;
             button.Click += clickEvent;
 
             Label label = new();
@@ -116,22 +168,33 @@ namespace Main_Window
 
             ListBoxItem listBoxItem = new();
             listBoxItem.Content = stackPanel;
+            listBoxItem.Name = text;
 
             list.Items.Add(listBoxItem);
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            timeThread.Join();
+            timeThread?.Join();
 
             base.OnClosed(e);
         }
 
-        private List<Car> CarList()
+        private static bool WaitingForUpdate(Employee e) {
+            foreach (Employee i in awaitingUpdateEmployees) {
+                if (i.Name == e.Name) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static List<Car> GetCarList(List<Employee> employeeList)
         {
             List<Car> cars = new();
             
-            foreach(Employee employee in employees)
+            foreach(Employee employee in employeeList)
             {
                 cars.Add(employee.ItsCar);
             }

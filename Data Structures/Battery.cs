@@ -10,6 +10,7 @@ namespace Data_Structures
     {
         public double Capacity { get; set; }
         public double CurrentLevel { get; set; }
+        public double CurrentPercentage { get => CurrentLevel / Capacity; }
 
         /// <summary>
         /// returns the battery level after charging for the given amount of time
