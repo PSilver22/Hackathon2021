@@ -97,6 +97,7 @@ namespace Main_Window
                 }
                 chargingStationsMutex.ReleaseMutex();
             }
+            employees.Add(employee);
         }
 
         private void CreateListBoxItem(ListBox list, string text, string buttonId, string buttonText, RoutedEventHandler clickEvent)
@@ -125,5 +126,18 @@ namespace Main_Window
 
             base.OnClosed(e);
         }
+
+        private List<Car> CarList()
+        {
+            List<Car> cars = new();
+            
+            foreach(Employee employee in employees)
+            {
+                cars.Add(employee.ItsCar);
+            }
+
+            return cars;
+        }
+
     }
 }
