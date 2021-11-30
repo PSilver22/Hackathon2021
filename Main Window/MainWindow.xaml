@@ -6,6 +6,16 @@
         xmlns:local="clr-namespace:Main_Window"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid HorizontalAlignment="Stretch">
+        <ListBox>
+            <ListBoxItem>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Name: </Label>
+                    <CheckBox Height="15" Content="Plugged in"/>
+                    <CheckBox Height="15" Content="Unplugged" Margin="0,0,100,0" Padding="7,-1,0,0" Grid.IsSharedSizeScope="True"/>
+                </StackPanel>
+            </ListBoxItem>
+        </ListBox>
+
     </Grid>
 </Window>

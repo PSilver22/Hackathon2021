@@ -10,5 +10,12 @@ namespace Data_Structures
     {
         public double Capacity { get; set; }
         public double CurrentLevel { get; set; }
+
+        public double GetNewCharge(DateTime endTime, double chargeRate){
+            int chargeTime = (DateTime.Now - endTime).Minutes;
+
+            double slope = (Capacity - CurrentLevel) / chargeRate;
+            return (slope * chargeTime) + CurrentLevel;
+        }
     }
 }
