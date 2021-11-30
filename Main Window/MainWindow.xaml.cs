@@ -82,7 +82,8 @@ namespace Main_Window
 
             LicensePlate.Text = "License Plate #";
             BatteryCapacity.Text = "Battery Capacity";
-            CurrentBattery.Text = "Current Battery";
+            CurrentBattery.Text = "Current Batery";
+            Name.Text = "Name";
         }
 
         private int GetItemIndex(ListBox list, string name)
@@ -223,5 +224,172 @@ namespace Main_Window
             return cars;
         }
 
+        private void Name_GotFocus(object sender, RoutedEventArgs e)
+        {
+            Name.Text = "";
+        }
+
+        private void Name_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            Name.Text = "";
+        }
+
+        private void LicensePlate_GotFocus(object sender, RoutedEventArgs e)
+        {
+            LicensePlate.Text = "";
+        }
+
+        private void LicensePlate_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            LicensePlate.Text = "";
+        }
+
+        private void CurrentBattery_GotFocus(object sender, RoutedEventArgs e)
+        {
+            CurrentBattery.Text = "";
+        }
+
+        private void CurrentBattery_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            CurrentBattery.Text = "";
+        }
+
+        private void BatteryCapacity_GotFocus(object sender, RoutedEventArgs e)
+        {
+            BatteryCapacity.Text = "";
+        }
+
+        private void BatteryCapacity_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            BatteryCapacity.Text = "";
+        }
+
+        private void LicensePlate_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (LicensePlate.Text == "")
+            {
+                LicensePlate.Text = "License Plate #";
+            }
+        }
+
+        private void LicensePlate_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (LicensePlate.Text == "")
+            {
+                LicensePlate.Text = "License Plate #";
+            }
+        }
+
+        private void CurrentBattery_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (CurrentBattery.Text == "")
+            {
+                CurrentBattery.Text = "Current Battery";
+            }
+        }
+
+        private void CurrentBattery_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (CurrentBattery.Text == "")
+            {
+                CurrentBattery.Text = "Current Battery";
+            }
+        }
+
+        private void BatteryCapacity_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (BatteryCapacity.Text == "")
+            {
+                BatteryCapacity.Text = "Battery Capacity";
+            }
+        }
+
+        private void BatteryCapacity_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (BatteryCapacity.Text == "")
+            {
+                BatteryCapacity.Text = "Battery Capacity";
+            }
+        }
+
+        private void Name_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (Name.Text == "")
+            {
+                Name.Text = "Name";
+            }
+        }
+
+        private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (Name.Text == "")
+            {
+                Name.Text = "Name";
+            }
+        }
+
+        private void NumChargingStations_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                TextBox textBox = (TextBox)sender;
+
+                numChargingStations = int.Parse(textBox.Text);
+
+                textBox.Visibility = Visibility.Hidden;
+
+                Label label = new();
+
+                label.Content = "Number of Charging Stations: " + numChargingStations;
+
+                label.Margin = textBox.Margin;
+                label.Width = 200;
+                label.Height = 50;
+
+                MainGrid.Children.Add(label);
+            }
+        }
+
+        private void ChargingRate_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                TextBox textBox = (TextBox)sender;
+
+                chargeRate = int.Parse(textBox.Text);
+
+                textBox.Visibility = Visibility.Hidden;
+
+                Label label = new();
+
+                label.Content = "Charge Rate: " + chargeRate;
+
+                label.Margin = textBox.Margin;
+                label.Width = 200;
+                label.Height = 50;
+
+                MainGrid.Children.Add(label);
+            }
+        }
+
+        private void NumChargingStations_GotFocus(object sender, RoutedEventArgs e)
+        {
+            NumChargingStations.Text = "";
+        }
+
+        private void NumChargingStations_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            NumChargingStations.Text = "";
+        }
+
+        private void ChargingRate_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ChargingRate.Text = "";
+        }
+
+        private void ChargingRate_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ChargingRate.Text = "";
+        }
     }
 }
