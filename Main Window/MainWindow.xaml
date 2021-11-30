@@ -7,16 +7,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200">
     <Grid>
-        <ListBox Margin="0,10,700,10">
+        <ListBox Name="UpdatedEmployees" Margin="0,10,700,10">
         </ListBox>
-
+ 
         <Label Content="New Employee" Margin="900,0,69,600" Height="35" FontSize="20"/>
         <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" Height="20" Width="120" Margin="811,0,69,525" MaxLines="1"/>
         <Label Content="Car Information" Margin="811,0,69,456" Height="25" Width="120"/>
         <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" Height="20" Width="120" Margin="811,0,69,400" MaxLines="1"/>
         <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" Height="20" Width="120" Margin="811,0,69,350" MaxLines="1"/>
         <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,300" MaxLines="1"/>
-        <Button Name="AddButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120"/>
+        <Button Name="AddButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120" Click="AddEmployeeButton_Click"/>
         <Label Content="Time: 00:00" Height="25" Width="100" Margin="1090,625,0,0"/>
     </Grid>
 </Window>

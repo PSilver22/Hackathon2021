@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
+using Data_Structures;
+using Scheduler;
 
 namespace Main_Window
 {
@@ -20,9 +23,34 @@ namespace Main_Window
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static List<Car> chargingCars = new();
+        private static int maxSize = 0;
+        
+        private static Mutex chargingStationsMutex = new Mutex();
+
+
         public MainWindow()
         {
             InitializeComponent();
+
+            //ListBoxItem newItem = new ListBoxItem();
+            //StackPanel newItemContent = new StackPanel();
+
+            //Label newLabel = new Label();
+            //newLabel.Content = "Hello";
+
+            //Button button = new Button();
+            //button.Content = "Test";
+
+            //newItemContent.Children.Add(newLabel);
+            //newItemContent.Children.Add(button);
+
+            //newItem.Content = newItemContent;
+
+            //UpdatedEmployees.Items.Add(newItem)"
+            
         }
+
+
     }
 }
