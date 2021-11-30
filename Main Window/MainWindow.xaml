@@ -18,7 +18,7 @@
         <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,300" MaxLines="1" GotFocus="BatteryCapacity_GotFocus" GotKeyboardFocus="BatteryCapacity_GotKeyboardFocus" LostFocus="BatteryCapacity_LostFocus" LostKeyboardFocus="BatteryCapacity_LostKeyboardFocus"/>
         <Button Name="AddEmployeeButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120" Click="AddEmployeeButton_Click"/>
 
-        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" Height="20" Width="120" Margin="811,0,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="NumChargingStations_GotFocus" GotKeyboardFocus="NumChargingStations_GotKeyboardFocus"/>
-        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" Height="20" Width="120" Margin="811,75,69,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="ChargingRate_GotFocus" GotKeyboardFocus="ChargingRate_GotKeyboardFocus"/>
+        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" Height="20" Width="120" Margin="811,0,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="NumChargingStations_GotFocus" GotKeyboardFocus="NumChargingStations_GotKeyboardFocus" LostFocus="NumChargingStations_LostFocus" LostKeyboardFocus="NumChargingStations_LostKeyboardFocus"/>
+        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" Height="20" Width="120" Margin="811,75,69,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="ChargingRate_GotFocus" GotKeyboardFocus="ChargingRate_GotKeyboardFocus" LostFocus="ChargingRate_LostFocus" LostKeyboardFocus="ChargingRate_LostKeyboardFocus"/>
     </Grid>
 </Window>

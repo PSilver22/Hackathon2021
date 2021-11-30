@@ -391,5 +391,37 @@ namespace Main_Window
         {
             ChargingRate.Text = "";
         }
+
+        private void NumChargingStations_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (NumChargingStations.Text == "")
+            {
+                NumChargingStations.Text = "# Charging Stations";
+            }
+        }
+
+        private void NumChargingStations_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (NumChargingStations.Text == "")
+            {
+                NumChargingStations.Text = "# Charging Stations";
+            }
+        }
+
+        private void ChargingRate_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (ChargingRate.Text == "")
+            {
+                ChargingRate.Text = "Charging Rate";
+            }
+        }
+
+        private void ChargingRate_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (ChargingRate.Text == "")
+            {
+                ChargingRate.Text = "Charging Rate";
+            }
+        }
     }
 }
