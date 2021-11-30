@@ -84,6 +84,8 @@ namespace Main_Window
 
             ListBoxItem listBoxItem = new();
             listBoxItem.Content = stackPanel;
+
+            UpdatedEmployees.Items.Add(listBoxItem);
         }
     }
 }
