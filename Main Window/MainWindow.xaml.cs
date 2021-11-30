@@ -28,7 +28,7 @@ namespace Main_Window
         private static List<Employee> chargingEmployees = new();
         private static int numChargingStations = 3;
         private static Mutex chargingStationsMutex = new Mutex();
-        private static double chargeRate = 1;
+        private static double chargeRate = 60;
         private static double chargeGoalPercentage = 10;
 
         private static Mutex waitingEmployeesMutex = new Mutex();
@@ -82,15 +82,27 @@ namespace Main_Window
 
             LicensePlate.Text = "License Plate #";
             BatteryCapacity.Text = "Battery Capacity";
-            CurrentBattery.Text = "Current Batery";
+            CurrentBattery.Text = "Current Battery";
+        }
+
+        private int GetItemIndex(ListBox list, string name)
+        {
+            for (int i = 0; i < list.Items.Count; i++)
+            {
+                if (((ListBoxItem)list.Items.GetItemAt(i)).Name == name)
+                    return i;
+            }
+
+            return -1;
         }
 
         private void UnplugButton_Click(object sender, RoutedEventArgs e)
         {
-            chargingEmployees = (List<Employee>)chargingEmployees.Where(e => e.Name != ((Button)sender).Name);
+            chargingEmployees = chargingEmployees.Where(e => e.Name != ((Button)sender).Name).ToList();
 
             waitingEmployeesMutex.WaitOne();
             awaitingUpdateEmployees.Where(e => e.Name != ((Button)sender).Name);
+            UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             waitingEmployeesMutex.ReleaseMutex();
         }
 
@@ -102,6 +114,7 @@ namespace Main_Window
 
                 waitingEmployeesMutex.WaitOne();
                 awaitingUpdateEmployees.Remove(newChargeEmployee);
+                UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
                 waitingEmployeesMutex.ReleaseMutex();
             }
         }
@@ -115,7 +128,7 @@ namespace Main_Window
                 List<Car> chargingCars = GetCarList(chargingEmployees);
                 if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoalPercentage)
                 {
-                    List<Car> possibleChanges = Scheduler.GetLowestBatterylevelCars(GetCarList(employees), numChargingStations);
+                    List<Car> possibleChanges = Scheduler.GetUpperHalfCars(GetCarList(employees), numChargingStations);
 
                     foreach (Employee chargingEmployee in chargingEmployees) {
                         if (!possibleChanges.Contains(chargingEmployee.ItsCar) && !WaitingForUpdate(chargingEmployee)) {
@@ -132,9 +145,9 @@ namespace Main_Window
                     double? minEmployeeCharge = employees.Min(e => (chargingCars.Contains(e.ItsCar)) ? null : e.ItsCar.ItsBattery.CurrentPercentage);
 
                     if (minEmployeeCharge is not null) {
-                        Employee promptEmployee = employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge).First();
+                        Employee? promptEmployee = employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge && !WaitingForUpdate(e)).FirstOrDefault();
 
-                        if (!WaitingForUpdate(promptEmployee)) {
+                        if (promptEmployee is not null) {
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, promptEmployee.Name, "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
 
                             waitingEmployeesMutex.WaitOne();
@@ -149,7 +162,7 @@ namespace Main_Window
                 {
                     if (car != null)
                     {
-                        car.ItsBattery.CurrentLevel = Math.Max(chargeGoalPercentage, car.ItsBattery.CurrentLevel + (chargeRate / 60));
+                        car.ItsBattery.CurrentLevel = Math.Min(car.ItsBattery.Capacity, car.ItsBattery.CurrentLevel + (chargeRate / 60));
                     }
                 }
                 chargingStationsMutex.ReleaseMutex();
@@ -185,6 +198,10 @@ namespace Main_Window
         }
 
         private static bool WaitingForUpdate(Employee e) {
+            if (e == null) {
+                return false;
+            }
+
             foreach (Employee i in awaitingUpdateEmployees) {
                 if (i.Name == e.Name) {
                     return true;

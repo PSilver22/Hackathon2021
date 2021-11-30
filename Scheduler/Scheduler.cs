@@ -20,7 +20,10 @@ namespace Scheduler_ns
         public static List<Car> GetLowestBatterylevelCars(List<Car> cars, int sizeOfList)
         {
             List<Car> lowerHalf = new List<Car>(cars);
-            lowerHalf.RemoveRange(sizeOfList + 1, cars.Count - sizeOfList);
+            if (sizeOfList < lowerHalf.Count)
+            {
+                lowerHalf.RemoveRange(sizeOfList + 1, Math.Max(cars.Count, cars.Count - sizeOfList));
+            }
 
             return lowerHalf;
         }
@@ -28,7 +31,8 @@ namespace Scheduler_ns
         public static List<Car> GetUpperHalfCars(List<Car> cars, int sizeOfLowerHalf)
         {
             List<Car> upperRange = new List<Car>(cars);
-            upperRange.RemoveRange(0, sizeOfLowerHalf);
+          
+            upperRange.RemoveRange(0, Math.Min(cars.Count, sizeOfLowerHalf));
 
             return upperRange;
         }
@@ -42,7 +46,7 @@ namespace Scheduler_ns
             }
             average /= cars.Count;
 
-            return average;
+            return average * 100;
         }
     }
 }
