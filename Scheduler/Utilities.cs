@@ -124,6 +124,19 @@ namespace Utilities_ns
 
             return timeToChargeToUpperAverage >= 120;
         }
+
+        public static bool CarExists(int LicensePlateNumber)
+        {
+            foreach(Employee employee in employees)
+            {
+                if (employee.ItsCar.LicensePlateNumber == LicensePlateNumber)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 }
 

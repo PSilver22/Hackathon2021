@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 
-namespace EmailSender
+namespace EmailSender_ns
 {
     public class EmailSender
     {
@@ -20,6 +20,23 @@ namespace EmailSender
         public void SendEmail(string receiver, string subject, string body)
         {
             smtpClient.Send(emailAddress, receiver, subject, body);
+        }
+
+        public static bool IsValidEmail(string email)
+        {
+            if (email.Trim().EndsWith("."))
+            {
+                return false; // suggested by @TK-421
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
