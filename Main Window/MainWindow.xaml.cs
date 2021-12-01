@@ -162,7 +162,7 @@ namespace Main_Window
             chargingEmployees = chargingEmployees.Where(e => e.Name != ((Button)sender).Name).ToList();
 
             waitingEmployeesMutex.WaitOne();
-            awaitingUpdateEmployees.Where(e => e.Name != ((Button)sender).Name);
+            awaitingUpdateEmployees = awaitingUpdateEmployees.Where(e => e.Name != ((Button)sender).Name).ToList();
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             waitingEmployeesMutex.ReleaseMutex();
         }
@@ -195,6 +195,13 @@ namespace Main_Window
             }
         }
 
+        private static void UpdateChargeGoal(List<Employee> chargingEmployees, List<Employee> allEmployees) {
+            foreach (Employee employee in allEmployees)
+            {
+
+            }
+        }
+
         private static void DisplayChargingEmployees(List<Employee> EmployeesThatAreCharging)
         {
             main.Dispatcher.Invoke(() =>
@@ -211,7 +218,6 @@ namespace Main_Window
         }
 
         private static void TimeFunction() {
-
             while (running)
             { 
                 Thread.Sleep(1000);
@@ -222,7 +228,7 @@ namespace Main_Window
                 if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoalPercentage)
                 {
                     // get the next group of cars
-                    List<Car> possibleChanges = Scheduler.GetLowestBatterylevelCars(GetCarList(employees), numChargingStations);
+                    List<Car> possibleChanges = Scheduler.GetLowestBatterylevelCars(GetCarList(employees), numChargingStations).Where(c => !chargingCars.Contains(c)).ToList();
 
                     foreach (Employee chargingEmployee in chargingEmployees) {
                         if (!WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee.ItsCar) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100)) {
@@ -253,14 +259,8 @@ namespace Main_Window
                 waitingEmployeesMutex.ReleaseMutex();
 
                 chargingStationsMutex.WaitOne();
-                foreach (Employee employee in chargingEmployees)
-                {
-                    if (employee != null)
-                    {
-                        UpdateBatterylevel(chargingEmployees, 1);
-                        DisplayChargingEmployees(chargingEmployees);
-                    }
-                }
+                UpdateBatterylevel(chargingEmployees, 1);
+                DisplayChargingEmployees(chargingEmployees);
                 chargingStationsMutex.ReleaseMutex();
             }
         }
