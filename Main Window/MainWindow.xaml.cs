@@ -237,7 +237,6 @@ namespace Main_Window
                                 chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
                                 EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
-                                Utilities.waitingEmployeesMutex.ReleaseMutex();
                             }
                         }
                     }
