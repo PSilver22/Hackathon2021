@@ -84,7 +84,7 @@ namespace Main_Window
             car.ItsBattery = battery;
 
             Employee employee = new();
-            employee.Name = Name.Text;
+            employee.Name = Name.Text.Replace('_', ' ');
             employee.ItsCar = car;
 
             Utilities.employees.Add(employee);
@@ -94,22 +94,23 @@ namespace Main_Window
             List<Car> chargingCars = Utilities.GetCarList(Utilities.chargingEmployees);
             if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
             {
-                double? minEmployeeCharge = Utilities.employees.Min(e => (chargingCars.Contains(e.ItsCar)) ? null : e.ItsCar.ItsBattery.CurrentPercentage);
+                // get the employees with the smallest charge
+                List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonChargingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
 
-                if (minEmployeeCharge is not null)
+                foreach (Employee minEmployee in minEmployees)
                 {
-                    Employee? promptEmployee = Utilities.employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge && !Utilities.WaitingForUpdate(e)).FirstOrDefault();
-
-                    if (promptEmployee is not null)
+                    if (!Utilities.waitingPlugInEmployees.Contains(minEmployee) && !Utilities.waitingUnplugEmployees.Contains(minEmployee))
                     {
-                        CreateListBoxItem(main.UpdatedEmployees, promptEmployee.Name, "Plug in", new RoutedEventHandler(main.PlugInButton_Click));
+                        main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, minEmployee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
 
-                        Utilities.awaitingUpdateEmployees.Add(promptEmployee);
+                        Utilities.waitingPlugInEmployees.Add(minEmployee);
                     }
                 }
             }
 
             Utilities.waitingEmployeesMutex.ReleaseMutex();
+
+            Utilities.UpdateNewChargeGoal();
 
             UpdateEmployeeList();
 
@@ -125,7 +126,7 @@ namespace Main_Window
             foreach (var employee in Utilities.employees) {
                 ListBoxItem newItem = new ListBoxItem();
                 StackPanel newContent = new StackPanel() { Name="EmployeeInfo" };
-                Label nameLabel = new Label() { Name = "NameLabel", Content = employee.Name };
+                Label nameLabel = new Label() { Name = "NameLabel", Content = employee.Name.Replace('_', ' ') };
 
                 newContent.Children.Add(nameLabel);
 
@@ -140,7 +141,7 @@ namespace Main_Window
         {
             for (int i = 0; i < list.Items.Count; i++)
             {
-                if (((ListBoxItem)list.Items.GetItemAt(i)).Name == name)
+                if (((ListBoxItem)list.Items.GetItemAt(i)).Name == name.Replace(' ', '_'))
                     return i;
             }
 
@@ -149,33 +150,28 @@ namespace Main_Window
 
         private void UnplugButton_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.chargingEmployees = Utilities.chargingEmployees.Where(e => e.Name != ((Button)sender).Name).ToList();
+            Utilities.chargingEmployees = Utilities.chargingEmployees.Where(e => e.Name != ((Button)sender).Name.Replace('_', ' ')).ToList();
+
+            Utilities.UpdateNewChargeGoal();
 
             Utilities.waitingEmployeesMutex.WaitOne();
-            Utilities.awaitingUpdateEmployees.Where(e => e.Name != ((Button)sender).Name);
+            Utilities.waitingUnplugEmployees.Where(e => e.Name != ((Button)sender).Name.Replace('_', ' '));
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             Utilities.waitingEmployeesMutex.ReleaseMutex();
         }
 
         private void PlugInButton_Click(object sender, RoutedEventArgs e) {
-            Employee? newChargeEmployee = Utilities.employees.Find(e => e.Name == ((Button) sender).Name);
+            Employee? newChargeEmployee = Utilities.employees.Find(e => e.Name == ((Button) sender).Name.Replace('_', ' '));
 
             if (newChargeEmployee != null) {
                 Utilities.chargingEmployees.Add(newChargeEmployee);
 
+                Utilities.UpdateNewChargeGoal();
+
                 Utilities.waitingEmployeesMutex.WaitOne();
-                Utilities.awaitingUpdateEmployees.Remove(newChargeEmployee);
+                Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
                 Utilities.waitingEmployeesMutex.ReleaseMutex();
-            }
-        }
-
-        
-
-        private static void UpdateChargeGoal(List<Employee> chargingEmployees, List<Employee> allEmployees) {
-            foreach (Employee employee in allEmployees)
-            {
-
             }
         }
 
@@ -205,14 +201,18 @@ namespace Main_Window
                 if (Utilities.GetAverageBatteryPercentage(chargingCars) >= Utilities.chargeGoalPercentage)
                 {
                     // get the next group of cars
-                    List<Car> possibleChanges = Utilities.GetLowestBatterylevelCars(Utilities.GetCarList(Utilities.employees), Utilities.numChargingStations);
+                    List<Car> possibleChanges = Utilities.GetLowestBatteryLevelCars(Utilities.GetCarList(Utilities.employees), Utilities.numChargingStations);
 
+                    // check each charging employee
                     foreach (Employee chargingEmployee in Utilities.chargingEmployees) {
+                        // if the employee is not already waiting to be updated and (the car doesn't still need charge or the cars battery is at 100)
                         if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee.ItsCar) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100)) {
+                            // Ask to unplug the empoyee's car
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, chargingEmployee.Name, "Unplug", new RoutedEventHandler(main.UnplugButton_Click)));
 
+                            // add the employee to list of employees waiting for an update
                             Utilities.waitingEmployeesMutex.WaitOne();
-                            Utilities.awaitingUpdateEmployees.Add(chargingEmployee);
+                            Utilities.waitingUnplugEmployees.Add(chargingEmployee);
                             Utilities.waitingEmployeesMutex.ReleaseMutex();
                         }
                     }
@@ -220,18 +220,32 @@ namespace Main_Window
 
                 Utilities.waitingEmployeesMutex.WaitOne();
 
+                // if the number of cars charging is less than the number of chargers and the number of cars charging is less than the number of total cars
                 if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count) {
-                    double? minEmployeeCharge = Utilities.employees.Min(e => (chargingCars.Contains(e.ItsCar)) ? null : e.ItsCar.ItsBattery.CurrentPercentage);
+                    // get the employees with the smallest charge
+                    List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonChargingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
 
-                    if (minEmployeeCharge is not null) {
-                        Employee? promptEmployee = Utilities.employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge && !Utilities.WaitingForUpdate(e)).FirstOrDefault();
+                    foreach (Employee employee in minEmployees)
+                    {
+                        if (!Utilities.waitingPlugInEmployees.Contains(employee))
+                        {
+                            main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, employee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
 
-                        if (promptEmployee is not null) {
-                            main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, promptEmployee.Name, "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
-
-                            Utilities.awaitingUpdateEmployees.Add(promptEmployee);
+                            Utilities.waitingPlugInEmployees.Add(employee);
                         }
                     }
+
+                    //double? minEmployeeCharge = Utilities.employees.Min(e => (chargingCars.Contains(e.ItsCar)) ? null : e.ItsCar.ItsBattery.CurrentPercentage);
+
+                    //if (minEmployeeCharge is not null) {
+                    //    Employee? promptEmployee = Utilities.employees.Where(e => e.ItsCar.ItsBattery.CurrentPercentage == minEmployeeCharge && !Utilities.WaitingForUpdate(e)).FirstOrDefault();
+
+                    //    if (promptEmployee is not null) {
+                    //        main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, promptEmployee.Name, "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
+
+                    //        Utilities.awaitingUpdateEmployees.Add(promptEmployee);
+                    //    }
+                    //}
                 }
                 Utilities.waitingEmployeesMutex.ReleaseMutex();
 
@@ -252,7 +266,7 @@ namespace Main_Window
         {
             Button button = new();
             button.Content = buttonText;
-            button.Name = text;
+            button.Name = text.Replace(' ', '_');
             button.Click += clickEvent;
 
             Label label = new();
@@ -264,7 +278,7 @@ namespace Main_Window
 
             ListBoxItem listBoxItem = new();
             listBoxItem.Content = stackPanel;
-            listBoxItem.Name = text;
+            listBoxItem.Name = text.Replace(' ', '_');
 
             list.Items.Add(listBoxItem);
         }
@@ -276,9 +290,6 @@ namespace Main_Window
             timeThread?.Join();
         }
 
-       
-
-        
         private void TextBoxGotFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox)
@@ -469,7 +480,7 @@ namespace Main_Window
                 StackPanel content = (StackPanel)item.Content;
                 string employeeName = content.Children[0].ToString().Split(" ")[1];
 
-                Employee? updateEmployee = employees.Find(e => e.Name == employeeName);
+                Employee? updateEmployee = Utilities.employees.Find(e => e.Name == employeeName);
 
                 content.Children.Add(new Label() { Content = (Math.Round(updateEmployee.ItsCar.ItsBattery.CurrentPercentage, 2)).ToString() + "%", Visibility = Visibility.Visible });
             }

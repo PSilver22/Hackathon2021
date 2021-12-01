@@ -14,7 +14,9 @@ namespace Utilities_ns
         public static double chargeGoalPercentage = 10;
 
         public static Mutex waitingEmployeesMutex = new Mutex();
-        public static List<Employee> awaitingUpdateEmployees = new();
+
+        public static List<Employee> waitingPlugInEmployees = new();
+        public static List<Employee> waitingUnplugEmployees = new();
 
         public static List<Employee> employees = new();
         public static List<Car> CarsToChargeNow(List<Car> cars, List<ChargingStation> stations, DateTime EndTime)
@@ -23,17 +25,28 @@ namespace Utilities_ns
 
             cars.Sort((Car x, Car y) => (int)(x.ItsBattery.CurrentLevel - y.ItsBattery.CurrentLevel));
 
-            List<Car> bottomHalf = GetLowestBatterylevelCars(cars, numOfStations);
+            List<Car> bottomHalf = GetLowestBatteryLevelCars(cars, numOfStations);
 
             return bottomHalf;
         }
 
-        public static List<Car> GetLowestBatterylevelCars(List<Car> cars, int sizeOfList)
+        public static List<Car> GetLowestBatteryLevelCars(List<Car> cars, int sizeOfList)
         {
             List<Car> lowerHalf = new List<Car>(cars);
             if (sizeOfList < lowerHalf.Count)
             {
-                lowerHalf.RemoveRange(sizeOfList + 1, Math.Max(cars.Count, cars.Count - sizeOfList));
+                lowerHalf.RemoveRange(sizeOfList, cars.Count - sizeOfList);
+            }
+
+            return lowerHalf;
+        }
+
+        public static List<Employee> GetLowestBatteryLevelEmployees(List<Employee> employeeList, int sizeOfList) {
+            List<Employee> lowerHalf = new List<Employee>(employeeList);
+            
+            if (sizeOfList < lowerHalf.Count)
+            {
+                lowerHalf.RemoveRange(sizeOfList, employeeList.Count - sizeOfList);
             }
 
             return lowerHalf;
@@ -50,12 +63,16 @@ namespace Utilities_ns
 
         public static double GetAverageBatteryPercentage(List<Car> cars)
         {
-            double average = 0;
-            foreach (Car car in cars)
+            double average = 1;
+            if (cars.Count != 0)
             {
-                average += car.ItsBattery.CurrentLevel / car.ItsBattery.Capacity;
+                average = 0;
+                foreach (Car car in cars)
+                {
+                    average += car.ItsBattery.CurrentLevel / car.ItsBattery.Capacity;
+                }
+                average /= cars.Count;
             }
-            average /= cars.Count;
 
             return average * 100;
         }
@@ -82,8 +99,15 @@ namespace Utilities_ns
                 return false;
             }
 
-            foreach (Employee i in Utilities.awaitingUpdateEmployees)
+            foreach (Employee i in Utilities.waitingPlugInEmployees)
             {
+                if (i.Name == e.Name)
+                {
+                    return true;
+                }
+            }
+
+            foreach (Employee i in Utilities.waitingUnplugEmployees) {
                 if (i.Name == e.Name)
                 {
                     return true;
@@ -105,6 +129,23 @@ namespace Utilities_ns
             return cars;
         }
 
+        public static List<Employee> GetNonChargingEmployees() {
+            List<Employee> notChargingEmployees = new List<Employee>();
+            foreach (Employee employee in employees)
+            {
+                if (!chargingEmployees.Contains(employee))
+                {
+                    notChargingEmployees.Add(employee);
+                }
+            }
+
+            return notChargingEmployees;
+        }
+
+        public static void UpdateNewChargeGoal()
+        {
+            chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
+        }
     }
 }
 
