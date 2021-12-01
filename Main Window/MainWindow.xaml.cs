@@ -190,7 +190,7 @@ namespace Main_Window
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             Utilities.waitingEmployeesMutex.ReleaseMutex();
 
-            ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.GetAverageBatteryPercentage(Utilities.GetCarList(Utilities.chargingEmployees)), Utilities.chargeGoalPercentage)).ToString();
+            ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
 
         private void PlugInButton_Click(object sender, RoutedEventArgs e) {
@@ -201,12 +201,14 @@ namespace Main_Window
 
                 Utilities.UpdateNewChargeGoal();
 
+                SendExpectedUnplugTime(newChargeEmployee);
+
                 Utilities.waitingEmployeesMutex.WaitOne();
                 Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
                 Utilities.waitingEmployeesMutex.ReleaseMutex();
 
-                ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.GetAverageBatteryPercentage(Utilities.GetCarList(Utilities.chargingEmployees)), Utilities.chargeGoalPercentage)).ToString();
+                ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
             }
         }
 
@@ -238,7 +240,7 @@ namespace Main_Window
                 
                 List<Car> chargingCars = Utilities.GetCarList(Utilities.chargingEmployees);
 
-                if (!Utilities.ReachedSecondStage(Utilities.employees))
+                if (!Utilities.ReachedSecondStage())
                 {
                     timePassed = 0;
 
@@ -598,9 +600,9 @@ namespace Main_Window
             return "Update to your cars status in the charging station";
         }
 
-        private static void SendExpectedUnplugTime(List<Employee> employees, double GoalAverage)
+        private static void SendExpectedUnplugTime(Employee employee)
         {
-            double expectedtime = Utilities.TimeToChargeInMinutes(loweraverage, upperaverage);
+            double expectedtime = Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage);
 
             EmailSender.SendEmail(employee.EmailAdress, ETAEmailSubject(), ETAEmailBody(expectedtime));
         }
