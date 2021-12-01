@@ -229,5 +229,61 @@ namespace Utilities_ns
 
             return returnList;
         }
+
+        public static List<Employee> ChargingEmployees()
+        {
+            List<Employee> chargingEmployees = new();
+
+            foreach(Employee employee in employees)
+            {
+                if (employee.ItsCar.ItsBattery.State == Data_Structures.Enum.BatteryState.charging)
+                {
+                    chargingEmployees.Add(employee);
+                }
+            }
+            return chargingEmployees;
+        }
+
+        public static List<Employee> NotChargingEmployees()
+        {
+            List<Employee> notChargingEmployees = new();
+
+            foreach(Employee employee in employees)
+            {
+                if (employee.ItsCar.ItsBattery.State == Data_Structures.Enum.BatteryState.notCharging)
+                {
+                    notChargingEmployees.Add(employee);
+                }
+            }
+            return notChargingEmployees;
+        }
+
+        public static List<Employee> WaitingToPlugEmployees()
+        {
+            List<Employee> waitingToPlugEmployees = new();
+
+            foreach(Employee employee in employees)
+            {
+                if (employee.ItsCar.ItsBattery.State == Data_Structures.Enum.BatteryState.waitingToCharge)
+                {
+                    waitingToPlugEmployees.Add(employee);
+                }
+            }
+            return waitingToPlugEmployees;
+        }
+
+        public static List<Employee> WaitingToUnplugEmployees()
+        {
+            List<Employee> waitingToUnplugEmployees = new();
+
+            foreach(Employee employee in employees)
+            {
+                if (employee.ItsCar.ItsBattery.State == Data_Structures.Enum.BatteryState.waitingToNotCharge)
+                {
+                    waitingToUnplugEmployees.Add(employee);
+                }
+            }
+            return waitingToUnplugEmployees;
+        }
     }
 }

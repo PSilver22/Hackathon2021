@@ -201,7 +201,7 @@ namespace Main_Window
 
                 Utilities.UpdateNewChargeGoal();
 
-                //SendExpectedUnplugTime(newChargeEmployee);
+                
 
                 Utilities.waitingEmployeesMutex.WaitOne();
                 Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
