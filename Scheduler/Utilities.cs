@@ -138,7 +138,7 @@ namespace Utilities_ns
         public static bool ReachedSecondStage(List<Employee> employees)
         {
             List<Car> cars = GetCarList(employees);
-            List<Car> lowerCars = GetLowestBatterylevelCars(cars, numChargingStations);
+            List<Car> lowerCars = GetLowestBatteryLevelCars(cars, numChargingStations);
             List<Car> upperCars = GetUpperHalfCars(cars, numChargingStations);
 
             double lowerAverage = GetAverageBatteryPercentage(lowerCars);
@@ -161,7 +161,23 @@ namespace Utilities_ns
             return false;
         }
 
+        public static List<Employee> GetNonChargingEmployees()
+        {
+            List<Employee> notChargingEmployees = new List<Employee>();
+            foreach (Employee employee in employees)
+            {
+                if (!chargingEmployees.Contains(employee))
+                {
+                    notChargingEmployees.Add(employee);
+                }
+            }
+
+            return notChargingEmployees;
+        }
+
+        public static void UpdateNewChargeGoal()
+        {
+            chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
+        }
     }
 }
-
-
