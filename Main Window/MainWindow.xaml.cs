@@ -25,7 +25,8 @@ namespace Main_Window
     public partial class MainWindow : Window
     {
         public static MainWindow main;
-        
+
+        private static EmailSender EmailSender = new();
         
         private static Thread? timeThread;
 
@@ -227,7 +228,7 @@ namespace Main_Window
                         if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee.ItsCar) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100)) {
                             // Ask to unplug the empoyee's car
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, chargingEmployee.Name, "Unplug", new RoutedEventHandler(main.UnplugButton_Click)));
-
+                            EmailSender.
                             // add the employee to list of employees waiting for an update
                             Utilities.waitingEmployeesMutex.WaitOne();
                             Utilities.waitingUnplugEmployees.Add(chargingEmployee);
