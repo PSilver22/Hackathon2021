@@ -226,9 +226,10 @@ namespace Main_Window
                     foreach (Employee chargingEmployee in Utilities.chargingEmployees) {
                         // if the employee is not already waiting to be updated and (the car doesn't still need charge or the cars battery is at 100)
                         if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee.ItsCar) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100)) {
-                            // Ask to unplug the empoyee's car
+                            // Ask to unplug the employee's car
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, chargingEmployee.Name, "Unplug", new RoutedEventHandler(main.UnplugButton_Click)));
-                            EmailSender.
+                            //sending email to the employee to unplug their car
+                            EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody());
                             // add the employee to list of employees waiting for an update
                             Utilities.waitingEmployeesMutex.WaitOne();
                             Utilities.waitingUnplugEmployees.Add(chargingEmployee);
@@ -249,6 +250,8 @@ namespace Main_Window
                         if (!Utilities.waitingPlugInEmployees.Contains(employee))
                         {
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, employee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
+                            //sending email to employee to plug in their car
+                            EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody());
 
                             Utilities.waitingPlugInEmployees.Add(employee);
                         }
@@ -516,6 +519,21 @@ namespace Main_Window
                 content.Children.RemoveAt(1);
                 item.Content = content;
             }
+        }
+
+        private static string UnplugCarEmailBody()
+        {
+            return "Please unplug your car";
+        }
+
+        private static string PluginCarEmailBody()
+        {
+            return "Please plug in your car";
+        }
+
+        private static string CarEmailSubject()
+        {
+            return "Update to your cars status in the charging station";
         }
     }
 }

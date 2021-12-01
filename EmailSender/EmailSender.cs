@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.IO;
 
 namespace EmailSender_ns
 {
+    
     public class EmailSender
     {
-        static string emailAddress = "skejouler@gmail.com";
-
-        static string password = "table7Skejoule";
+        public static string emailAddress;
+        public static string password;
+        public static void readInfo(string filepath)
+        {
+            string[] lines = System.IO.File.ReadAllLines(@filepath);
+            emailAddress = lines[0];
+            password = lines[1];
+        }
 
         SmtpClient smtpClient = new("smtp.gmail.com")
         {
