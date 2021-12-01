@@ -17,7 +17,7 @@ namespace EmailSender_ns
             password = lines[1];
         }
 
-        SmtpClient smtpClient = new("smtp.gmail.com")
+        public SmtpClient smtpClient = new("smtp.gmail.com")
         {
             Port = 587,
             Credentials = new NetworkCredential(emailAddress, password),
