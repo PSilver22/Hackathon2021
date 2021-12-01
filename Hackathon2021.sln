@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main Window", "Main Window\Main Window.csproj", "{E5D01E1B-E33F-4C99-8348-5E03F29B9B68}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data Structures", "Data Structures\Data Structures.csproj", "{9E71C0A1-7F2F-4BB6-93FE-E6E4075A51A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilities", "Scheduler\Utilities.csproj", "{12FAFFE8-DBA3-45D1-A12D-F0A7722DFF95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender", "EmailSender\EmailSender.csproj", "{1442E15D-5CC6-427A-B45E-23B2D0350152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender", "EmailSender\EmailSender.csproj", "{1442E15D-5CC6-427A-B45E-23B2D0350152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{CBEB54EA-76F4-4CBA-B12C-739A5E25DAEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{9E71C0A1-7F2F-4BB6-93FE-E6E4075A51A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E71C0A1-7F2F-4BB6-93FE-E6E4075A51A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E71C0A1-7F2F-4BB6-93FE-E6E4075A51A7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12FAFFE8-DBA3-45D1-A12D-F0A7722DFF95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12FAFFE8-DBA3-45D1-A12D-F0A7722DFF95}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12FAFFE8-DBA3-45D1-A12D-F0A7722DFF95}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12FAFFE8-DBA3-45D1-A12D-F0A7722DFF95}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1442E15D-5CC6-427A-B45E-23B2D0350152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1442E15D-5CC6-427A-B45E-23B2D0350152}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1442E15D-5CC6-427A-B45E-23B2D0350152}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1442E15D-5CC6-427A-B45E-23B2D0350152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBEB54EA-76F4-4CBA-B12C-739A5E25DAEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBEB54EA-76F4-4CBA-B12C-739A5E25DAEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBEB54EA-76F4-4CBA-B12C-739A5E25DAEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBEB54EA-76F4-4CBA-B12C-739A5E25DAEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

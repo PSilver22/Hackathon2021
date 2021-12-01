@@ -41,9 +41,10 @@ namespace Utilities_ns
             return lowerHalf;
         }
 
-        public static List<Employee> GetLowestBatteryLevelEmployees(List<Employee> employeeList, int sizeOfList) {
+        public static List<Employee> GetLowestBatteryLevelEmployees(List<Employee> employeeList, int sizeOfList)
+        {
             List<Employee> lowerHalf = new List<Employee>(employeeList);
-            
+
             if (sizeOfList < lowerHalf.Count)
             {
                 lowerHalf.RemoveRange(sizeOfList, employeeList.Count - sizeOfList);
@@ -55,7 +56,7 @@ namespace Utilities_ns
         public static List<Car> GetUpperHalfCars(List<Car> cars, int sizeOfLowerHalf)
         {
             List<Car> upperRange = new List<Car>(cars);
-          
+
             upperRange.RemoveRange(0, Math.Min(cars.Count, sizeOfLowerHalf));
 
             return upperRange;
@@ -107,7 +108,8 @@ namespace Utilities_ns
                 }
             }
 
-            foreach (Employee i in Utilities.waitingUnplugEmployees) {
+            foreach (Employee i in Utilities.waitingUnplugEmployees)
+            {
                 if (i.Name == e.Name)
                 {
                     return true;
@@ -132,11 +134,11 @@ namespace Utilities_ns
         public static double TimeToChargeInMinutes(List<Employee> employees, double goalPercentage)
         {
             double time = 0;
-            foreach(Employee employee in employees)
+            foreach (Employee employee in employees)
             {
                 double capacity = employee.ItsCar.ItsBattery.Capacity;
                 double currentLevel = employee.ItsCar.ItsBattery.CurrentLevel;
-                time += (goalPercentage - currentLevel) / ((capacity - currentLevel) / (chargeRate / 100)); 
+                time += (goalPercentage - currentLevel) / ((capacity - currentLevel) / (chargeRate / 100));
             }
             time /= employees.Count;
             return time;
@@ -158,7 +160,7 @@ namespace Utilities_ns
 
         public static bool CarExists(int LicensePlateNumber)
         {
-            foreach(Employee employee in employees)
+            foreach (Employee employee in employees)
             {
                 if (employee.ItsCar.LicensePlateNumber == LicensePlateNumber)
                 {
@@ -187,11 +189,14 @@ namespace Utilities_ns
             chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
         }
 
-        public static Employee GetMaxChargeEmployee(List<Employee> employees) {
+        public static Employee GetMaxChargeEmployee(List<Employee> employees)
+        {
             Employee maxEmployee = null;
 
-            foreach (var e in employees) {
-                if (maxEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage > maxEmployee.ItsCar.ItsBattery.CurrentPercentage) {
+            foreach (var e in employees)
+            {
+                if (maxEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage > maxEmployee.ItsCar.ItsBattery.CurrentPercentage)
+                {
                     maxEmployee = e;
                 }
             }
@@ -199,7 +204,8 @@ namespace Utilities_ns
             return maxEmployee;
         }
 
-        public static Employee GetMinChargeEmployee(List<Employee> employees) {
+        public static Employee GetMinChargeEmployee(List<Employee> employees)
+        {
             Employee minEmployee = null;
 
             foreach (var e in employees)
@@ -213,11 +219,14 @@ namespace Utilities_ns
             return minEmployee;
         }
 
-        public static List<Employee> GetNonWaitingEmployees() {
+        public static List<Employee> GetNonWaitingEmployees()
+        {
             List<Employee> returnList = new();
 
-            foreach (Employee e in employees) {
-                if (!waitingPlugInEmployees.Contains(e) && !waitingUnplugEmployees.Contains(e)) {
+            foreach (Employee e in employees)
+            {
+                if (!waitingPlugInEmployees.Contains(e) && !waitingUnplugEmployees.Contains(e))
+                {
                     returnList.Add(e);
                 }
             }
