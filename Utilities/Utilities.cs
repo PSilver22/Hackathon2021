@@ -7,16 +7,9 @@ namespace Utilities_ns
 {
     public class Utilities
     {
-        public static List<Employee> chargingEmployees = new();
         public static int numChargingStations = 3;
-        public static Mutex chargingStationsMutex = new Mutex();
         public static double chargeRate = 60;
         public static double chargeGoalPercentage = 10;
-
-        public static Mutex waitingEmployeesMutex = new Mutex();
-
-        public static List<Employee> waitingPlugInEmployees = new();
-        public static List<Employee> waitingUnplugEmployees = new();
 
         public static List<Employee> employees = new();
         
@@ -114,7 +107,7 @@ namespace Utilities_ns
         public static bool ReachedSecondStage()
         {
             
-            double timeToChargeToChargeGoal = TimeToChargeInMinutes(chargingEmployees, chargeGoalPercentage);
+            double timeToChargeToChargeGoal = TimeToChargeInMinutes(Utilities.EmployeesInState(BatteryState.charging), chargeGoalPercentage);
 
             return timeToChargeToChargeGoal < 120;
         }

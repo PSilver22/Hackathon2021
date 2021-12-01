@@ -86,8 +86,6 @@ namespace Main_Window
             employee.EmailAdress = emailAddress;
 
             Utilities.employees.Add(employee);
-
-            Utilities.waitingEmployeesMutex.WaitOne();
             
             List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
 
@@ -96,7 +94,7 @@ namespace Main_Window
 
             if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
             {
-                if (Utilities.waitingPlugInEmployees.Count < Utilities.numChargingStations && Utilities.waitingPlugInEmployees.Count < Utilities.employees.Count)
+                if (Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) < Utilities.numChargingStations && Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) < Utilities.employees.Count)
                 {
                     foreach (Employee minEmployee in minEmployees)
                     {
@@ -118,8 +116,6 @@ namespace Main_Window
                 UpdateUpdatedEmployees();
                 EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
             }
-
-            Utilities.waitingEmployeesMutex.ReleaseMutex();
 
             Utilities.UpdateNewChargeGoal();
 
@@ -171,10 +167,8 @@ namespace Main_Window
             
             Utilities.UpdateNewChargeGoal();
 
-            Utilities.waitingEmployeesMutex.WaitOne();
             Utilities.employees.Find(e => e.Name == ((Button)sender).Name.Replace('_', ' ')).ItsCar.ItsBattery.State = BatteryState.notCharging;
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
-            Utilities.waitingEmployeesMutex.ReleaseMutex();
 
             //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
@@ -234,22 +228,19 @@ namespace Main_Window
                         List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.allStates, Utilities.numChargingStations);
 
                         // check each charging employee
-                        foreach (Employee chargingEmployee in Utilities.chargingEmployees)
+                        foreach (Employee chargingEmployee in Utilities.EmployeesInState(BatteryState.charging))
                         {
                             // if the employee is not already waiting to be updated and (the car doesn't still need charge or the cars battery is at 100)
                             if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100))
                             {
                                 // add the employee to list of employees waiting for an update
-                                Utilities.waitingEmployeesMutex.WaitOne();
-                                Utilities.waitingUnplugEmployees.Add(chargingEmployee);
+                                chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
                                 EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
                                 Utilities.waitingEmployeesMutex.ReleaseMutex();
                             }
                         }
                     }
-
-                    Utilities.waitingEmployeesMutex.WaitOne();
 
                     List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
 
@@ -261,54 +252,45 @@ namespace Main_Window
 
                         foreach (Employee employee in minEmployees)
                         {
-                            if (!Utilities.waitingPlugInEmployees.Contains(employee))
+                            if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge))
                             {
-                                Utilities.waitingPlugInEmployees.Add(employee);
+                                employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                                 UpdateUpdatedEmployees();
                                 EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
                             }
                         }
                     }
-                    Utilities.waitingEmployeesMutex.ReleaseMutex();
                 }
 
                 else {
                     ++timePassed;
 
                     if (timePassed >= 30) {
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations);
+                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Utilities.numChargingStations);
 
-                        foreach (Employee employee in Utilities.chargingEmployees) {
+                        foreach (Employee employee in Utilities.EmployeesInState(BatteryState.charging)) {
                             if (!Utilities.WaitingForUpdate(employee) && (!possibleChanges.Contains(employee) || employee.ItsCar.ItsBattery.CurrentPercentage == 100))
                             {
-                                Utilities.waitingEmployeesMutex.WaitOne();
-                                Utilities.waitingUnplugEmployees.Add(employee);
+                                employee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
-                                Utilities.waitingEmployeesMutex.ReleaseMutex();
                             }
                         }
 
-                        if (Utilities.chargingEmployees.Count < Utilities.numChargingStations) {
-                            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations - Utilities.chargingEmployees.Count);
+                        if (Utilities.NumOfEmployeesinState(BatteryState.charging) < Utilities.numChargingStations) {
+                            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations - Utilities.NumOfEmployeesinState(BatteryState.charging));
 
                             foreach (Employee e in minEmployees) {
-                                if (!Utilities.WaitingForUpdate(e)) {
-                                    Utilities.waitingEmployeesMutex.WaitOne();
-                                    Utilities.waitingPlugInEmployees.Add(e);
+                                if (!Utilities.WaitingForUpdate(e) && e.ItsCar.ItsBattery.CurrentPercentage < 100) {
+                                    e.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                                     UpdateUpdatedEmployees();
-                                    Utilities.waitingEmployeesMutex.ReleaseMutex();
                                 }
                             }
                         }
                     }
                 }
 
-                Utilities.chargingStationsMutex.WaitOne();
-
                 Utilities.UpdateBatterylevel(1);
                 DisplayChargingEmployees();
-
-                Utilities.chargingStationsMutex.ReleaseMutex();
             }
         }
 
@@ -316,11 +298,11 @@ namespace Main_Window
             main.Dispatcher.Invoke(() => {
                 main.UpdatedEmployees.Items.Clear();
 
-                foreach (Employee waitingEmployee in Utilities.waitingPlugInEmployees) {
+                foreach (Employee waitingEmployee in Utilities.EmployeesInState(BatteryState.waitingToCharge)) {
                     CreateListBoxItem(main.UpdatedEmployees, waitingEmployee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click));
                 }
 
-                foreach (Employee waitingEmployee in Utilities.waitingUnplugEmployees)
+                foreach (Employee waitingEmployee in Utilities.EmployeesInState(BatteryState.waitingToNotCharge))
                 {
                     CreateListBoxItem(main.UpdatedEmployees, waitingEmployee.Name.Replace('_', ' '), "Unplug", new RoutedEventHandler(main.UnplugButton_Click));
                 }
