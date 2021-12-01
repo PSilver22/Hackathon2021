@@ -260,6 +260,7 @@ namespace Main_Window
                             {
                                 employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                                 UpdateUpdatedEmployees();
+                                //NOTE: not sending this email
                                 EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
                             }
                         }
