@@ -114,6 +114,7 @@ namespace Main_Window
                     }
                 }
                 UpdateUpdatedEmployees();
+                EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
             }
 
             Utilities.UpdateNewChargeGoal();
@@ -238,6 +239,7 @@ namespace Main_Window
                                 // add the employee to list of employees waiting for an update
                                 chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
+                                EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
 
                                 secondStage = true;
                             }
@@ -258,6 +260,7 @@ namespace Main_Window
                             {
                                 employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                                 UpdateUpdatedEmployees();
+                                EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
                             }
                         }
                     }
@@ -430,7 +433,7 @@ namespace Main_Window
                 label.Content = "Number of Charging Stations: " + Utilities.numChargingStations;
 
                 label.Margin = new Thickness(901.5, 325, 00, 000);
-                label.Width = 175;
+                label.Width = 180;
                 label.Height = 30;
                 label.HorizontalAlignment = HorizontalAlignment.Left;
                 label.VerticalAlignment = VerticalAlignment.Top;
@@ -468,7 +471,7 @@ namespace Main_Window
                 label.Content = "Charge Rate: " + Utilities.chargeRate + " mAh";
 
                 label.Margin = new Thickness(901.5, 350, 0, 0);
-                label.Width = 120;
+                label.Width = 135;
                 label.Height = 30;
                 label.HorizontalAlignment = HorizontalAlignment.Left;
                 label.VerticalAlignment = VerticalAlignment.Top;
@@ -554,38 +557,23 @@ namespace Main_Window
             }
         }
 
-        private static string UnplugCarEmailBody(int licensePlateNumber)
+        private static string UnplugCarEmailBody(Employee employee)
         {
-            return "License Plate #" + licensePlateNumber + " Please unplug your car";
+            return "Hello " + employee.Name + ",\nYour car is ready to be unplugged" 
+                + "\nPlease unplug it as soon as you can.\n"
+                + "Kindly,\nThe Office Management";
         }
 
-        private static string PluginCarEmailBody(int licensePlateNumber)
+        private static string PluginCarEmailBody(Employee employee)
         {
-            return "License Plate #" + licensePlateNumber + " Please plug in your car";
+            return "Hello " + employee.Name + ",\nYour car is ready to be plugged in"
+                + "\nPlease plug it in as soon as you can.\n"
+                + "Kindly,\nThe Office Management";
         }
 
         private static string CarEmailSubject()
         {
             return "Update to your cars status in the charging station";
-        }
-
-        private static void SendExpectedUnplugTime(Employee employee)
-        {
-            double expectedtime = Utilities.TimeToChargeInMinutes(Utilities.EmployeesInState(BatteryState.charging), Utilities.chargeGoalPercentage);
-
-            EmailSender.SendEmail(employee.EmailAdress, ETAEmailSubject(), ETAEmailBody(expectedtime));
-        }
-
-        private static string ETAEmailBody(double ETA)
-        {
-            return "Thank you for plugging in your car.\n" +
-                "You can expect to unplug your car in " + ETA
-                + " minutes.";
-        }
-
-        private static string ETAEmailSubject()
-        {
-            return "ETA for unplug";
         }
     }
 }
