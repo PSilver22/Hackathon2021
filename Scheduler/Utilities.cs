@@ -142,16 +142,9 @@ namespace Utilities_ns
             return time;
         }
 
-        public static bool ReachedSecondStage(List<Employee> employees)
+        public static bool ReachedSecondStage()
         {
-            List<Car> cars = GetCarList(employees);
-            List<Car> lowerCars = GetLowestBatteryLevelCars(cars, numChargingStations);
-            List<Car> upperCars = GetUpperHalfCars(cars, numChargingStations);
-
-            double lowerAverage = GetAverageBatteryPercentage(lowerCars);
-            double upperAverage = GetAverageBatteryPercentage(upperCars);
-
-            double timeToChargeToUpperAverage = TimeToChargeInMinutes(lowerAverage, upperAverage);
+            double timeToChargeToUpperAverage = TimeToChargeInMinutes(chargingEmployees, chargeGoalPercentage);
 
             return timeToChargeToUpperAverage < 10;
         }

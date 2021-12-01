@@ -240,7 +240,7 @@ namespace Main_Window
                 
                 List<Car> chargingCars = Utilities.GetCarList(Utilities.chargingEmployees);
 
-                if (!Utilities.ReachedSecondStage(Utilities.employees))
+                if (!Utilities.ReachedSecondStage())
                 {
                     timePassed = 0;
 
