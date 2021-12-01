@@ -24,7 +24,7 @@ namespace Main_Window
     public partial class MainWindow : Window
     {
         public static MainWindow main;
-
+        
         private static List<Employee> chargingEmployees = new();
         private static int numChargingStations = 3;
         private static Mutex chargingStationsMutex = new Mutex();
@@ -67,13 +67,30 @@ namespace Main_Window
 
         private void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Name.Text == "Name")
+            {
+                LicensePlate.Text = "License Plate #";
+                BatteryCapacity.Text = "Battery Capacity";
+                CurrentBattery.Text = "Current Battery";
+                return;
+            }
             Battery battery = new();
-
-            battery.Capacity = double.Parse(BatteryCapacity.Text);
-            battery.CurrentLevel = double.Parse(CurrentBattery.Text);
-
             Car car = new();
-            car.LicensePlateNumber = int.Parse(LicensePlate.Text);
+            try
+            {
+                battery.Capacity = double.Parse(BatteryCapacity.Text);
+                battery.CurrentLevel = double.Parse(CurrentBattery.Text);
+                car.LicensePlateNumber = int.Parse(LicensePlate.Text);
+            }
+            catch(FormatException)
+            {
+                LicensePlate.Text = "License Plate #";
+                BatteryCapacity.Text = "Battery Capacity";
+                CurrentBattery.Text = "Current Battery";
+                Name.Text = "Name";
+                return;
+            }
+            
             car.ItsBattery = battery;
 
             Employee employee = new();
@@ -84,7 +101,7 @@ namespace Main_Window
 
             LicensePlate.Text = "License Plate #";
             BatteryCapacity.Text = "Battery Capacity";
-            CurrentBattery.Text = "Current Batery";
+            CurrentBattery.Text = "Current Battery";
             Name.Text = "Name";
         }
 
@@ -122,12 +139,42 @@ namespace Main_Window
             }
         }
 
+        private static void UpdateBatterylevel(List<Employee> ChargingEmployees, double ChargeTimeInMinutes)
+        {
+            if(ChargeTimeInMinutes == 0)
+            {
+                return;
+            }
+
+            foreach(Employee employee in ChargingEmployees)
+            {
+                employee.ItsCar.ItsBattery.CurrentLevel = Math
+                    .Min(employee.ItsCar.ItsBattery.CurrentLevel + (ChargeTimeInMinutes * chargeRate / 60),
+                    employee.ItsCar.ItsBattery.Capacity);
+            }
+        }
+
+        private static void DisplayChargingEmployees(List<Employee> EmployeesThatAreCharging)
+        {
+            main.Dispatcher.Invoke(() =>
+            {
+                main.ChargingEmployees.Items.Clear();
+
+                foreach (Employee employee in EmployeesThatAreCharging)
+                {
+                    Label label = new();
+                    label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
+                    main.ChargingEmployees.Items.Add(label);
+                }
+            });
+        }
+
         private static void TimeFunction() {
 
             while (running)
-            {
+            { 
                 Thread.Sleep(1000);
-
+                
                 List<Car> chargingCars = GetCarList(chargingEmployees);
                 if (Scheduler.GetAverageBatteryPercentage(chargingCars) >= chargeGoalPercentage)
                 {
@@ -159,13 +206,14 @@ namespace Main_Window
                         }
                     }
                 }
-
+                
                 chargingStationsMutex.WaitOne();
-                foreach (Car car in chargingCars)
+                foreach (Employee employee in chargingEmployees)
                 {
-                    if (car != null)
+                    if (employee != null)
                     {
-                        car.ItsBattery.CurrentLevel = Math.Min(car.ItsBattery.Capacity, car.ItsBattery.CurrentLevel + (chargeRate / 60));
+                        UpdateBatterylevel(chargingEmployees, 1);
+                        DisplayChargingEmployees(chargingEmployees);
                     }
                 }
                 chargingStationsMutex.ReleaseMutex();
@@ -293,9 +341,18 @@ namespace Main_Window
                     NumChargingStations.Text = "# Charging Stations";
                     return;
                 }
+
                 TextBox textBox = (TextBox)sender;
 
-                numChargingStations = int.Parse(textBox.Text);
+                try
+                {
+                    numChargingStations = int.Parse(textBox.Text);
+                }
+                catch(FormatException)
+                {
+                    NumChargingStations.Text = "# Charging Stations";
+                    return;
+                }
 
                 textBox.Visibility = Visibility.Hidden;
 
@@ -323,7 +380,15 @@ namespace Main_Window
 
                 TextBox textBox = (TextBox)sender;
 
-                chargeRate = int.Parse(textBox.Text);
+                try
+                {
+                    chargeRate = int.Parse(textBox.Text);
+                }
+                catch(FormatException)
+                {
+                    ChargingRate.Text = "Charging Rate";
+                    return;
+                }
 
                 textBox.Visibility = Visibility.Hidden;
 
