@@ -5,7 +5,10 @@ using System.IO;
 
 namespace EmailSender_ns
 {
-    
+    /*
+     * avraham file path: "C:\Users\a3210\Machon Lev\Hackathon\EmailSender\EmailInfo.txt"
+     * pinny file path: "C:\Users\pinny\source\repos\Hackathon2021\EmailSender\EmailInfo.txt"
+     */
     public class EmailSender
     {
         public static string emailAddress;
@@ -19,7 +22,7 @@ namespace EmailSender_ns
         public SmtpClient smtpClient = new("smtp.gmail.com")
         {
             Port = 587,
-            Credentials = readInfo(@"C:\Users\pinny\source\repos\Hackathon2021\EmailSender\EmailInfo.txt"),
+            Credentials = readInfo(@"C:\Users\a3210\Machon Lev\Hackathon\EmailSender\EmailInfo.txt"),
             EnableSsl = true,
         };
 
