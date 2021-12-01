@@ -24,7 +24,7 @@ namespace Main_Window
     public partial class MainWindow : Window
     {
         public static MainWindow main;
-
+        
         private static List<Employee> chargingEmployees = new();
         private static int numChargingStations = 3;
         private static Mutex chargingStationsMutex = new Mutex();
@@ -67,13 +67,30 @@ namespace Main_Window
 
         private void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Name.Text == "Name")
+            {
+                LicensePlate.Text = "License Plate #";
+                BatteryCapacity.Text = "Battery Capacity";
+                CurrentBattery.Text = "Current Battery";
+                return;
+            }
             Battery battery = new();
-
-            battery.Capacity = double.Parse(BatteryCapacity.Text);
-            battery.CurrentLevel = double.Parse(CurrentBattery.Text);
-
             Car car = new();
-            car.LicensePlateNumber = int.Parse(LicensePlate.Text);
+            try
+            {
+                battery.Capacity = double.Parse(BatteryCapacity.Text);
+                battery.CurrentLevel = double.Parse(CurrentBattery.Text);
+                car.LicensePlateNumber = int.Parse(LicensePlate.Text);
+            }
+            catch(FormatException)
+            {
+                LicensePlate.Text = "License Plate #";
+                BatteryCapacity.Text = "Battery Capacity";
+                CurrentBattery.Text = "Current Battery";
+                Name.Text = "Name";
+                return;
+            }
+            
             car.ItsBattery = battery;
 
             Employee employee = new();
@@ -108,7 +125,7 @@ namespace Main_Window
 
             LicensePlate.Text = "License Plate #";
             BatteryCapacity.Text = "Battery Capacity";
-            CurrentBattery.Text = "Current Batery";
+            CurrentBattery.Text = "Current Battery";
             Name.Text = "Name";
         }
 
@@ -163,12 +180,42 @@ namespace Main_Window
             }
         }
 
+        private static void UpdateBatterylevel(List<Employee> ChargingEmployees, double ChargeTimeInMinutes)
+        {
+            if(ChargeTimeInMinutes == 0)
+            {
+                return;
+            }
+
+            foreach(Employee employee in ChargingEmployees)
+            {
+                employee.ItsCar.ItsBattery.CurrentLevel = Math
+                    .Min(employee.ItsCar.ItsBattery.CurrentLevel + (ChargeTimeInMinutes * chargeRate / 60),
+                    employee.ItsCar.ItsBattery.Capacity);
+            }
+        }
+
+        private static void DisplayChargingEmployees(List<Employee> EmployeesThatAreCharging)
+        {
+            main.Dispatcher.Invoke(() =>
+            {
+                main.ChargingEmployees.Items.Clear();
+
+                foreach (Employee employee in EmployeesThatAreCharging)
+                {
+                    Label label = new();
+                    label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
+                    main.ChargingEmployees.Items.Add(label);
+                }
+            });
+        }
+
         private static void TimeFunction() {
 
             while (running)
-            {
+            { 
                 Thread.Sleep(1000);
-
+                
                 List<Car> chargingCars = GetCarList(chargingEmployees);
 
                 // if the average percentage has reached the goal
@@ -206,12 +253,12 @@ namespace Main_Window
                 waitingEmployeesMutex.ReleaseMutex();
 
                 chargingStationsMutex.WaitOne();
-                // charge all the cars (Should be moved to separate function)
-                foreach (Car car in chargingCars)
+                foreach (Employee employee in chargingEmployees)
                 {
-                    if (car != null)
+                    if (employee != null)
                     {
-                        car.ItsBattery.CurrentLevel = Math.Min(car.ItsBattery.Capacity, car.ItsBattery.CurrentLevel + (chargeRate / 60));
+                        UpdateBatterylevel(chargingEmployees, 1);
+                        DisplayChargingEmployees(chargingEmployees);
                     }
                 }
                 chargingStationsMutex.ReleaseMutex();
@@ -272,117 +319,85 @@ namespace Main_Window
             return cars;
         }
 
-        private void Name_GotFocus(object sender, RoutedEventArgs e)
+        private void TextBoxGotFocus(object sender, RoutedEventArgs e)
         {
-            Name.Text = "";
-        }
-
-        private void Name_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            Name.Text = "";
-        }
-
-        private void LicensePlate_GotFocus(object sender, RoutedEventArgs e)
-        {
-            LicensePlate.Text = "";
-        }
-
-        private void LicensePlate_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            LicensePlate.Text = "";
-        }
-
-        private void CurrentBattery_GotFocus(object sender, RoutedEventArgs e)
-        {
-            CurrentBattery.Text = "";
-        }
-
-        private void CurrentBattery_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            CurrentBattery.Text = "";
-        }
-
-        private void BatteryCapacity_GotFocus(object sender, RoutedEventArgs e)
-        {
-            BatteryCapacity.Text = "";
-        }
-
-        private void BatteryCapacity_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            BatteryCapacity.Text = "";
-        }
-
-        private void LicensePlate_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (LicensePlate.Text == "")
+            if (sender is TextBox)
             {
-                LicensePlate.Text = "License Plate #";
+                ((TextBox)sender).Text = "";
             }
         }
 
-        private void LicensePlate_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void TextBoxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (LicensePlate.Text == "")
+            if (sender is TextBox)
             {
-                LicensePlate.Text = "License Plate #";
+                ((TextBox)sender).Text = "";
             }
         }
 
-        private void CurrentBattery_LostFocus(object sender, RoutedEventArgs e)
+        private void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
-            if (CurrentBattery.Text == "")
+            if (sender is TextBox)
             {
-                CurrentBattery.Text = "Current Battery";
+                TextBox textBox = (TextBox)sender;
+
+                if (textBox.Text == "")
+                {
+                    switch (textBox.Name)
+                    {
+                        case "Name": textBox.Text = "Name"; break;
+                        case "LicensePlate": textBox.Text = "License Plate #"; break;
+                        case "CurrentBattery": textBox.Text = "Current Battery"; break;
+                        case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
+                        case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
+                        case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                    }
+                }
             }
         }
 
-        private void CurrentBattery_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void TextBoxKeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (CurrentBattery.Text == "")
+            if (sender is TextBox)
             {
-                CurrentBattery.Text = "Current Battery";
-            }
-        }
+                TextBox textBox = (TextBox)sender;
 
-        private void BatteryCapacity_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (BatteryCapacity.Text == "")
-            {
-                BatteryCapacity.Text = "Battery Capacity";
-            }
-        }
-
-        private void BatteryCapacity_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (BatteryCapacity.Text == "")
-            {
-                BatteryCapacity.Text = "Battery Capacity";
-            }
-        }
-
-        private void Name_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (Name.Text == "")
-            {
-                Name.Text = "Name";
-            }
-        }
-
-        private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (Name.Text == "")
-            {
-                Name.Text = "Name";
+                if (textBox.Text == "")
+                {
+                    switch (textBox.Name)
+                    {
+                        case "Name": textBox.Text = "Name"; break;
+                        case "LicensePlate": textBox.Text = "License Plate #"; break;
+                        case "CurrentBattery": textBox.Text = "Current Battery"; break;
+                        case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
+                        case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
+                        case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                    }
+                }
             }
         }
 
         private void NumChargingStations_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return || e.Key == Key.Tab)
             {
+                if (NumChargingStations.Text == "")
+                {
+                    NumChargingStations.Text = "# Charging Stations";
+                    return;
+                }
+
                 TextBox textBox = (TextBox)sender;
 
-                numChargingStations = int.Parse(textBox.Text);
+                try
+                {
+                    numChargingStations = int.Parse(textBox.Text);
+                }
+                catch(FormatException)
+                {
+                    NumChargingStations.Text = "# Charging Stations";
+                    return;
+                }
 
                 textBox.Visibility = Visibility.Hidden;
 
@@ -390,9 +405,9 @@ namespace Main_Window
 
                 label.Content = "Number of Charging Stations: " + numChargingStations;
 
-                label.Margin = textBox.Margin;
+                label.Margin = new Thickness(900.0, 300.0, 100.0, 300.0);
                 label.Width = 200;
-                label.Height = 50;
+                label.Height = 30;
 
                 MainGrid.Children.Add(label);
             }
@@ -400,21 +415,35 @@ namespace Main_Window
 
         private void ChargingRate_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return || e.Key == Key.Tab)
             {
+                if (ChargingRate.Text == "")
+                {
+                    ChargingRate.Text = "Charging Rate";
+                    return;
+                }
+
                 TextBox textBox = (TextBox)sender;
 
-                chargeRate = int.Parse(textBox.Text);
+                try
+                {
+                    chargeRate = int.Parse(textBox.Text);
+                }
+                catch(FormatException)
+                {
+                    ChargingRate.Text = "Charging Rate";
+                    return;
+                }
 
                 textBox.Visibility = Visibility.Hidden;
 
                 Label label = new();
 
-                label.Content = "Charge Rate: " + chargeRate;
+                label.Content = "Charge Rate: " + chargeRate + " mAh";
 
-                label.Margin = textBox.Margin;
+                label.Margin = new Thickness(900, 350, 100, 275);
                 label.Width = 200;
-                label.Height = 50;
+                label.Height = 30;
 
                 MainGrid.Children.Add(label);
             }

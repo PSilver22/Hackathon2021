@@ -21,15 +21,15 @@
         </ListBox>
 
         <Label Content="New Employee" Margin="900,0,69,600" Height="35" FontSize="20"/>
-        <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" Height="20" Width="120" Margin="811,0,69,525" MaxLines="1" GotFocus="Name_GotFocus" GotKeyboardFocus="Name_GotKeyboardFocus" LostFocus="Name_LostFocus" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+        <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" Height="20" Width="120" Margin="811,0,69,525" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
         <Label Content="Car Information" Margin="811,0,69,456" Height="25" Width="120"/>
-        <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" Height="20" Width="120" Margin="811,0,69,400" MaxLines="1" GotFocus="LicensePlate_GotFocus" GotKeyboardFocus="LicensePlate_GotKeyboardFocus" LostFocus="LicensePlate_LostFocus" LostKeyboardFocus="LicensePlate_LostKeyboardFocus"/>
-        <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" Height="20" Width="120" Margin="811,0,69,350" MaxLines="1" GotFocus="CurrentBattery_GotFocus" GotKeyboardFocus="CurrentBattery_GotKeyboardFocus" LostFocus="CurrentBattery_LostFocus" LostKeyboardFocus="CurrentBattery_LostKeyboardFocus"/>
-        <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,300" MaxLines="1" GotFocus="BatteryCapacity_GotFocus" GotKeyboardFocus="BatteryCapacity_GotKeyboardFocus" LostFocus="BatteryCapacity_LostFocus" LostKeyboardFocus="BatteryCapacity_LostKeyboardFocus"/>
+        <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" Height="20" Width="120" Margin="811,0,69,400" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" Height="20" Width="120" Margin="811,0,69,350" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,300" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
         <Button Name="AddEmployeeButton" Content="Add Employee" Height="30" Margin="811,0,69,225" Width="120" Click="AddEmployeeButton_Click"/>
 
         <Label Content="General Settings" Margin="900,0,69,75" Height="37" FontSize="20"/>
-        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" Height="20" Width="120" Margin="811,0,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="NumChargingStations_GotFocus" GotKeyboardFocus="NumChargingStations_GotKeyboardFocus" LostFocus="NumChargingStations_LostFocus" LostKeyboardFocus="NumChargingStations_LostKeyboardFocus"/>
-        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" Height="20" Width="120" Margin="811,75,69,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="ChargingRate_GotFocus" GotKeyboardFocus="ChargingRate_GotKeyboardFocus" LostFocus="ChargingRate_LostFocus" LostKeyboardFocus="ChargingRate_LostKeyboardFocus"/>
+        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" Height="20" Width="120" Margin="811,0,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" Height="20" Width="120" Margin="811,75,69,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
     </Grid>
 </Window>
