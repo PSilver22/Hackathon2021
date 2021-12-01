@@ -138,7 +138,7 @@ namespace Utilities_ns
         public static bool ReachedSecondStage(List<Employee> employees)
         {
             List<Car> cars = GetCarList(employees);
-            List<Car> lowerCars = GetLowestBatterylevelCars(cars, numChargingStations);
+            List<Car> lowerCars = GetLowestBatteryLevelCars(cars, numChargingStations);
             List<Car> upperCars = GetUpperHalfCars(cars, numChargingStations);
 
             double lowerAverage = GetAverageBatteryPercentage(lowerCars);
