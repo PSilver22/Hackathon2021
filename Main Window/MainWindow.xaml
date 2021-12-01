@@ -20,17 +20,17 @@
         <ListBox Name="EmployeeList" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,50">
         </ListBox>
 
-        <Label Content="New Employee" Margin="900,0,69,600" Height="35" FontSize="20"/>
-        <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" Height="20" Width="120" Margin="811,0,69,525" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <TextBox Name="EmailAddress" TextWrapping="NoWrap" Text="Email Address" Height="20" Width="120" Margin="811,0,69,475" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <Label Content="Car Information" Margin="811,0,69,430" Height="25" Width="120"/>
-        <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" Height="20" Width="120" Margin="811,0,69,380" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" Height="20" Width="120" Margin="811,0,69,330" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" Height="20" Width="120" Margin="811,0,69,280" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <Button Name="AddEmployeeButton" Content="Add Employee" Height="30" Width="120" Margin="911,50,169,250" Click="AddEmployeeButton_Click" RenderTransformOrigin="0.475,1.651"/>
+        <Label Content="New Employee" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="900,30,0,0" Width="200" Height="35" FontSize="20"/>
+        <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,65,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="EmailAddress" TextWrapping="NoWrap" Text="Email Address" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,90,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <Label Content="Car Information" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="911,115,0,0" Height="25" Width="120"/>
+        <TextBox Name="LicensePlate" TextWrapping="NoWrap" Text="License Plate #" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,140,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="CurrentBattery" TextWrapping="NoWrap" Text="Current Battery" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,165,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="BatteryCapacity" TextWrapping="NoWrap" Text="Battery Capacity" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,190,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <Button Name="AddEmployeeButton" Content="Add Employee" HorizontalAlignment="Left" VerticalAlignment="Top" Height="30" Width="120" Margin="911,220,0,0" Click="AddEmployeeButton_Click"/>
 
-        <Label Content="General Settings" Margin="900,0,69,75" Height="37" FontSize="20"/>
-        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" Height="20" Width="120" Margin="811,0,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
-        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" Height="20" Width="120" Margin="811,75,69,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <Label Content="General Settings" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="900,290,0,0" Height="40" FontSize="20"/>
+        <TextBox Name="NumChargingStations" TextWrapping="NoWrap" Text="# Charging Stations" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,330,69,000" MaxLines="1" KeyDown="NumChargingStations_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
+        <TextBox Name="ChargingRate" TextWrapping="NoWrap" Text="Charging Rate" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,355,0,0" MaxLines="1" KeyDown="ChargingRate_KeyDown" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>
     </Grid>
 </Window>
