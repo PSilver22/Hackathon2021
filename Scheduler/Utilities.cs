@@ -146,7 +146,7 @@ namespace Utilities_ns
 
             double timeToChargeToUpperAverage = TimeToChargeInMinutes(lowerAverage, upperAverage);
 
-            return timeToChargeToUpperAverage >= 120;
+            return timeToChargeToUpperAverage < 10;
         }
 
         public static bool CarExists(int LicensePlateNumber)
@@ -178,6 +178,44 @@ namespace Utilities_ns
         public static void UpdateNewChargeGoal()
         {
             chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
+        }
+
+        public static Employee GetMaxChargeEmployee(List<Employee> employees) {
+            Employee maxEmployee = null;
+
+            foreach (var e in employees) {
+                if (maxEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage > maxEmployee.ItsCar.ItsBattery.CurrentPercentage) {
+                    maxEmployee = e;
+                }
+            }
+
+            return maxEmployee;
+        }
+
+        public static Employee GetMinChargeEmployee(List<Employee> employees) {
+            Employee minEmployee = null;
+
+            foreach (var e in employees)
+            {
+                if (minEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage < minEmployee.ItsCar.ItsBattery.CurrentPercentage)
+                {
+                    minEmployee = e;
+                }
+            }
+
+            return minEmployee;
+        }
+
+        public static List<Employee> GetNonWaitingEmployees() {
+            List<Employee> returnList = new();
+
+            foreach (Employee e in employees) {
+                if (!waitingPlugInEmployees.Contains(e) && !waitingUnplugEmployees.Contains(e)) {
+                    returnList.Add(e);
+                }
+            }
+
+            return returnList;
         }
     }
 }
