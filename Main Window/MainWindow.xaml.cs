@@ -115,7 +115,9 @@ namespace Main_Window
                     if (!Utilities.waitingPlugInEmployees.Contains(minEmployee) && !Utilities.waitingUnplugEmployees.Contains(minEmployee))
                     {
                         main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, minEmployee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
-
+                        //sending email to employee to plug in their car
+                        EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(minEmployee.ItsCar.LicensePlateNumber));
+                        //add the employee to list of employees waiting for an update
                         Utilities.waitingPlugInEmployees.Add(minEmployee);
                     }
                 }
@@ -229,7 +231,7 @@ namespace Main_Window
                             // Ask to unplug the employee's car
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, chargingEmployee.Name, "Unplug", new RoutedEventHandler(main.UnplugButton_Click)));
                             //sending email to the employee to unplug their car
-                            EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody());
+                            EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee.ItsCar.LicensePlateNumber));
                             // add the employee to list of employees waiting for an update
                             Utilities.waitingEmployeesMutex.WaitOne();
                             Utilities.waitingUnplugEmployees.Add(chargingEmployee);
@@ -251,8 +253,8 @@ namespace Main_Window
                         {
                             main.Dispatcher.Invoke(() => CreateListBoxItem(main.UpdatedEmployees, employee.Name.Replace('_', ' '), "Plug in", new RoutedEventHandler(main.PlugInButton_Click)));
                             //sending email to employee to plug in their car
-                            EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody());
-
+                            EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee.ItsCar.LicensePlateNumber));
+                            // add the employee to list of employees waiting for an update
                             Utilities.waitingPlugInEmployees.Add(employee);
                         }
                     }
@@ -521,14 +523,14 @@ namespace Main_Window
             }
         }
 
-        private static string UnplugCarEmailBody()
+        private static string UnplugCarEmailBody(int licensePlateNumber)
         {
-            return "Please unplug your car";
+            return "License Plate #" + licensePlateNumber + " Please unplug your car";
         }
 
-        private static string PluginCarEmailBody()
+        private static string PluginCarEmailBody(int licensePlateNumber)
         {
-            return "Please plug in your car";
+            return "License Plate #" + licensePlateNumber + " Please plug in your car";
         }
 
         private static string CarEmailSubject()
