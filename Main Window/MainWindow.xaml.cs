@@ -226,114 +226,73 @@ namespace Main_Window
             return cars;
         }
 
-        private void Name_GotFocus(object sender, RoutedEventArgs e)
+        private void TextBoxGotFocus(object sender, RoutedEventArgs e)
         {
-            Name.Text = "";
-        }
-
-        private void Name_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            Name.Text = "";
-        }
-
-        private void LicensePlate_GotFocus(object sender, RoutedEventArgs e)
-        {
-            LicensePlate.Text = "";
-        }
-
-        private void LicensePlate_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            LicensePlate.Text = "";
-        }
-
-        private void CurrentBattery_GotFocus(object sender, RoutedEventArgs e)
-        {
-            CurrentBattery.Text = "";
-        }
-
-        private void CurrentBattery_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            CurrentBattery.Text = "";
-        }
-
-        private void BatteryCapacity_GotFocus(object sender, RoutedEventArgs e)
-        {
-            BatteryCapacity.Text = "";
-        }
-
-        private void BatteryCapacity_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            BatteryCapacity.Text = "";
-        }
-
-        private void LicensePlate_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (LicensePlate.Text == "")
+            if (sender is TextBox)
             {
-                LicensePlate.Text = "License Plate #";
+                ((TextBox)sender).Text = "";
             }
         }
 
-        private void LicensePlate_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void TextBoxGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (LicensePlate.Text == "")
+            if (sender is TextBox)
             {
-                LicensePlate.Text = "License Plate #";
+                ((TextBox)sender).Text = "";
             }
         }
 
-        private void CurrentBattery_LostFocus(object sender, RoutedEventArgs e)
+        private void TextBoxLostFocus(object sender, RoutedEventArgs e)
         {
-            if (CurrentBattery.Text == "")
+            if (sender is TextBox)
             {
-                CurrentBattery.Text = "Current Battery";
+                TextBox textBox = (TextBox)sender;
+
+                if (textBox.Text == "")
+                {
+                    switch (textBox.Name)
+                    {
+                        case "Name": textBox.Text = "Name"; break;
+                        case "LicensePlate": textBox.Text = "License Plate #"; break;
+                        case "CurrentBattery": textBox.Text = "Current Battery"; break;
+                        case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
+                        case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
+                        case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                    }
+                }
             }
         }
 
-        private void CurrentBattery_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void TextBoxKeyboardLostFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (CurrentBattery.Text == "")
+            if (sender is TextBox)
             {
-                CurrentBattery.Text = "Current Battery";
-            }
-        }
+                TextBox textBox = (TextBox)sender;
 
-        private void BatteryCapacity_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (BatteryCapacity.Text == "")
-            {
-                BatteryCapacity.Text = "Battery Capacity";
-            }
-        }
-
-        private void BatteryCapacity_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (BatteryCapacity.Text == "")
-            {
-                BatteryCapacity.Text = "Battery Capacity";
-            }
-        }
-
-        private void Name_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (Name.Text == "")
-            {
-                Name.Text = "Name";
-            }
-        }
-
-        private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (Name.Text == "")
-            {
-                Name.Text = "Name";
+                if (textBox.Text == "")
+                {
+                    switch (textBox.Name)
+                    {
+                        case "Name": textBox.Text = "Name"; break;
+                        case "LicensePlate": textBox.Text = "License Plate #"; break;
+                        case "CurrentBattery": textBox.Text = "Current Battery"; break;
+                        case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
+                        case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
+                        case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                    }
+                }
             }
         }
 
         private void NumChargingStations_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return || e.Key == Key.Tab)
             {
+                if (NumChargingStations.Text == "")
+                {
+                    NumChargingStations.Text = "# Charging Stations";
+                    return;
+                }
                 TextBox textBox = (TextBox)sender;
 
                 numChargingStations = int.Parse(textBox.Text);
@@ -344,9 +303,9 @@ namespace Main_Window
 
                 label.Content = "Number of Charging Stations: " + numChargingStations;
 
-                label.Margin = textBox.Margin;
+                label.Margin = new Thickness(900.0, 300.0, 100.0, 300.0);
                 label.Width = 200;
-                label.Height = 50;
+                label.Height = 30;
 
                 MainGrid.Children.Add(label);
             }
@@ -354,8 +313,14 @@ namespace Main_Window
 
         private void ChargingRate_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return || e.Key == Key.Tab)
             {
+                if (ChargingRate.Text == "")
+                {
+                    ChargingRate.Text = "Charging Rate";
+                    return;
+                }
+
                 TextBox textBox = (TextBox)sender;
 
                 chargeRate = int.Parse(textBox.Text);
@@ -364,65 +329,13 @@ namespace Main_Window
 
                 Label label = new();
 
-                label.Content = "Charge Rate: " + chargeRate;
+                label.Content = "Charge Rate: " + chargeRate + " mAh";
 
-                label.Margin = textBox.Margin;
+                label.Margin = new Thickness(900, 350, 100, 275);
                 label.Width = 200;
-                label.Height = 50;
+                label.Height = 30;
 
                 MainGrid.Children.Add(label);
-            }
-        }
-
-        private void NumChargingStations_GotFocus(object sender, RoutedEventArgs e)
-        {
-            NumChargingStations.Text = "";
-        }
-
-        private void NumChargingStations_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            NumChargingStations.Text = "";
-        }
-
-        private void ChargingRate_GotFocus(object sender, RoutedEventArgs e)
-        {
-            ChargingRate.Text = "";
-        }
-
-        private void ChargingRate_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            ChargingRate.Text = "";
-        }
-
-        private void NumChargingStations_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (NumChargingStations.Text == "")
-            {
-                NumChargingStations.Text = "# Charging Stations";
-            }
-        }
-
-        private void NumChargingStations_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (NumChargingStations.Text == "")
-            {
-                NumChargingStations.Text = "# Charging Stations";
-            }
-        }
-
-        private void ChargingRate_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (ChargingRate.Text == "")
-            {
-                ChargingRate.Text = "Charging Rate";
-            }
-        }
-
-        private void ChargingRate_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (ChargingRate.Text == "")
-            {
-                ChargingRate.Text = "Charging Rate";
             }
         }
     }
