@@ -7,12 +7,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200" Closed="Window_Closed">
     <Grid Name="MainGrid">
-        <ListBox Name="UpdatedEmployees" Margin="0,75,900,10">
-            <Label Content="Employees that need to move their car"/>
+        <Label Content="Employees that need to move their car" Margin="0,20,900,10"/>
+        <ListBox Name="UpdatedEmployees" Margin="0,50,900,10">
         </ListBox>
 
-        <ListBox Name="ChargingEmployees" Margin="300,75,600,10">
-            <Label Content="Employees that are charging"/>
+        <Label Content="Employees that are charging" Margin="250,20,700,10"/>
+        <ListBox Name="ChargingEmployees" Margin="250,50,700,10">
+        </ListBox>
+
+        <Label Content="Employees" Margin="485,20,400,10"/>
+        <ListBox Name="EmployeeList" Margin="485,50,400,10">
         </ListBox>
 
         <Label Content="New Employee" Margin="900,0,69,600" Height="35" FontSize="20"/>
