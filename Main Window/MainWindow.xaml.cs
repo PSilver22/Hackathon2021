@@ -402,10 +402,12 @@ namespace Main_Window
 
                 label.Content = "Number of Charging Stations: " + Utilities.numChargingStations;
 
-                label.Margin = new Thickness(900.0, 300.0, 100.0, 300.0);
-                label.Width = 200;
+                label.Margin = new Thickness(901.5, 325, 00, 000);
+                label.Width = 175;
                 label.Height = 30;
-
+                label.HorizontalAlignment = HorizontalAlignment.Left;
+                label.VerticalAlignment = VerticalAlignment.Top;
+                
                 MainGrid.Children.Add(label);
             }
         }
@@ -438,9 +440,11 @@ namespace Main_Window
 
                 label.Content = "Charge Rate: " + Utilities.chargeRate + " mAh";
 
-                label.Margin = new Thickness(900, 350, 100, 275);
-                label.Width = 200;
+                label.Margin = new Thickness(901.5, 350, 0, 0);
+                label.Width = 120;
                 label.Height = 30;
+                label.HorizontalAlignment = HorizontalAlignment.Left;
+                label.VerticalAlignment = VerticalAlignment.Top;
 
                 MainGrid.Children.Add(label);
             }
