@@ -89,7 +89,7 @@ namespace Main_Window
 
             Utilities.waitingEmployeesMutex.WaitOne();
             
-            List<Car> chargingCars = Utilities.GetCarList(BatteryState.charging);
+            List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
 
             // get the employees with the smallest charge
             List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
@@ -109,10 +109,10 @@ namespace Main_Window
 
                 else
                 {
-                    if (!Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonWaitingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count)).Contains(Utilities.GetMaxChargeEmployee(Utilities.waitingPlugInEmployees)))
+                    if (!Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count)).Contains(Utilities.GetMaxStateEmployee(BatteryState.waitingToCharge)))
                     {
-                        Utilities.GetMaxChargeEmployee(Utilities.waitingPlugInEmployees).ItsCar.ItsBattery.State = BatteryState.notCharging;
-                        Utilities.GetMinChargeEmployee(Utilities.GetNonWaitingEmployees()).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+                        Utilities.GetMaxStateEmployee(BatteryState.waitingToCharge).ItsCar.ItsBattery.State = BatteryState.notCharging;
+                        Utilities.GetMinStateEmployee(BatteryState.notCharging).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                     }
                 }
                 UpdateUpdatedEmployees();
@@ -230,7 +230,7 @@ namespace Main_Window
                     if (Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage)
                     {
                         // get the next group of cars
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(Utilities.numChargingStations);
+                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.allStates, Utilities.numChargingStations);
 
                         // check each charging employee
                         foreach (Employee chargingEmployee in Utilities.chargingEmployees)
@@ -249,11 +249,13 @@ namespace Main_Window
 
                     Utilities.waitingEmployeesMutex.WaitOne();
 
+                    List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
+
                     // if the number of cars charging is less than the number of chargers and the number of cars charging is less than the number of total cars
                     if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
                     {
                         // get the employees with the smallest charge
-                        List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonChargingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
+                        List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
 
                         foreach (Employee employee in minEmployees)
                         {
@@ -271,7 +273,7 @@ namespace Main_Window
                     ++timePassed;
 
                     if (timePassed >= 30) {
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(Utilities.employees, Utilities.numChargingStations);
+                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations);
 
                         foreach (Employee employee in Utilities.chargingEmployees) {
                             if (!Utilities.WaitingForUpdate(employee) && (!possibleChanges.Contains(employee) || employee.ItsCar.ItsBattery.CurrentPercentage == 100))
@@ -284,7 +286,7 @@ namespace Main_Window
                         }
 
                         if (Utilities.chargingEmployees.Count < Utilities.numChargingStations) {
-                            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(Utilities.employees, Utilities.numChargingStations - Utilities.chargingEmployees.Count);
+                            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations - Utilities.chargingEmployees.Count);
 
                             foreach (Employee e in minEmployees) {
                                 if (!Utilities.WaitingForUpdate(e)) {
@@ -300,8 +302,8 @@ namespace Main_Window
 
                 Utilities.chargingStationsMutex.WaitOne();
 
-                Utilities.UpdateBatterylevel(Utilities.chargingEmployees, 1);
-                DisplayChargingEmployees(Utilities.chargingEmployees);
+                Utilities.UpdateBatterylevel(1);
+                DisplayChargingEmployees();
 
                 Utilities.chargingStationsMutex.ReleaseMutex();
             }

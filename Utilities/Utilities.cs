@@ -40,6 +40,28 @@ namespace Utilities_ns
             return average * 100;
         }
 
+        public static List<Employee> GetLowestBatteryLevelEmployees(BatteryState state, int num) {
+            List<Employee> minEmployees = new();
+
+            foreach (var employee in EmployeesInState(state)) {
+                minEmployees.Add(employee);
+            }
+
+            minEmployees.Sort((x, y) => {
+                double result = x.ItsCar.ItsBattery.CurrentPercentage - y.ItsCar.ItsBattery.CurrentPercentage;
+                if (result < 0) { return -1; }
+                else if (result > 0) { return 1; }
+                else { return 0; }
+                });
+
+            if (num < minEmployees.Count)
+            {
+                minEmployees.RemoveRange(num, minEmployees.Count - num);
+            }
+
+            return minEmployees;
+        }
+
         public static void UpdateBatterylevel(double ChargeTimeInMinutes)
         {
             if (ChargeTimeInMinutes == 0)
@@ -125,9 +147,23 @@ namespace Utilities_ns
             return EmployeesInThatState[0];
         }
 
+        public static Employee GetMaxStateEmployee(BatteryState batteryState)
+        {
+            Employee maxEmployee = null;
+
+            List<Employee> EmployeesInThatState = EmployeesInState(batteryState);
+
+            EmployeesInThatState.Sort((Employee x, Employee y) => (int)(x.ItsCar.ItsBattery.CurrentPercentage - y.ItsCar.ItsBattery.CurrentPercentage));
+
+            return EmployeesInThatState[EmployeesInThatState.Count - 1];
+        }
 
         public static List<Employee> EmployeesInState(BatteryState batteryState)
         {
+            if (batteryState == BatteryState.allStates) {
+                return employees;
+            }
+
             List<Employee> employeesInState = new();
 
             foreach (Employee employee in employees)
