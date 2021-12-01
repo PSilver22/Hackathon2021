@@ -187,7 +187,7 @@ namespace Main_Window
                 Utilities.UpdateNewChargeGoal();
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
 
-                //SendExpectedUnplugTime(newChargeEmployee);
+                
 
                 //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
             }

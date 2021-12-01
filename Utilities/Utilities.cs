@@ -19,54 +19,14 @@ namespace Utilities_ns
         public static List<Employee> waitingUnplugEmployees = new();
 
         public static List<Employee> employees = new();
-        public static List<Car> CarsToChargeNow(List<Car> cars, List<ChargingStation> stations, DateTime EndTime)
-        {
-            int numOfStations = stations.Count;
-
-            cars.Sort((Car x, Car y) => (int)(x.ItsBattery.CurrentLevel - y.ItsBattery.CurrentLevel));
-
-            List<Car> bottomHalf = GetLowestBatteryLevelCars(cars, numOfStations);
-
-            return bottomHalf;
-        }
-
-        public static List<Car> GetLowestBatteryLevelCars(List<Car> cars, int sizeOfList)
-        {
-            List<Car> lowerHalf = new List<Car>(cars);
-            if (sizeOfList < lowerHalf.Count)
-            {
-                lowerHalf.RemoveRange(sizeOfList, cars.Count - sizeOfList);
-            }
-
-            return lowerHalf;
-        }
-
-        public static List<Employee> GetLowestBatteryLevelEmployees(List<Employee> employeeList, int sizeOfList)
-        {
-            employeeList.Sort((Employee x, Employee y) => (int)(x.ItsCar.ItsBattery.CurrentLevel - y.ItsCar.ItsBattery.CurrentLevel));
-
-            List<Employee> lowerHalf = new List<Employee>(employeeList);
-
-            if (sizeOfList < lowerHalf.Count)
-            {
-                lowerHalf.RemoveRange(sizeOfList, employeeList.Count - sizeOfList);
-            }
-
-            return lowerHalf;
-        }
-
-        public static List<Car> GetUpperHalfCars(List<Car> cars, int sizeOfLowerHalf)
-        {
-            List<Car> upperRange = new List<Car>(cars);
-
-            upperRange.RemoveRange(0, Math.Min(cars.Count, sizeOfLowerHalf));
-
-            return upperRange;
-        }
-
-        public static double GetAverageBatteryPercentage(List<Car> cars)
+        
+        
+        public static double GetAverageBatteryPercentage(BatteryState batteryState)
         {
             double average = 1;
+
+            List<Car> cars = GetCarListOfState(batteryState);
+
             if (cars.Count != 0)
             {
                 average = 0;
@@ -80,52 +40,35 @@ namespace Utilities_ns
             return average * 100;
         }
 
-        public static void UpdateBatterylevel(List<Employee> ChargingEmployees, double ChargeTimeInMinutes)
+        public static void UpdateBatterylevel(double ChargeTimeInMinutes)
         {
             if (ChargeTimeInMinutes == 0)
             {
                 return;
             }
 
-            foreach (Employee employee in ChargingEmployees)
+            foreach (Employee employee in EmployeesInState(BatteryState.charging))
             {
                 employee.ItsCar.ItsBattery.CurrentLevel = Math
-                    .Min(employee.ItsCar.ItsBattery.CurrentLevel + (ChargeTimeInMinutes * Utilities.chargeRate / 60),
+                    .Min(employee.ItsCar.ItsBattery.CurrentLevel + (ChargeTimeInMinutes * chargeRate / 60),
                     employee.ItsCar.ItsBattery.Capacity);
             }
         }
 
         public static bool WaitingForUpdate(Employee e)
         {
-            if (e == null)
+            if (e.ItsCar.ItsBattery.State == BatteryState.waitingToCharge || e.ItsCar.ItsBattery.State == BatteryState.waitingToNotCharge)
             {
-                return false;
+                return true;
             }
-
-            foreach (Employee i in Utilities.waitingPlugInEmployees)
-            {
-                if (i.Name == e.Name)
-                {
-                    return true;
-                }
-            }
-
-            foreach (Employee i in Utilities.waitingUnplugEmployees)
-            {
-                if (i.Name == e.Name)
-                {
-                    return true;
-                }
-            }
-
             return false;
         }
 
-        public static List<Car> GetCarList(List<Employee> employeeList)
+        public static List<Car> GetCarListOfState(BatteryState batteryState)
         {
             List<Car> cars = new();
 
-            foreach (Employee employee in employeeList)
+            foreach (Employee employee in EmployeesInState(batteryState))
             {
                 cars.Add(employee.ItsCar);
             }
@@ -166,68 +109,40 @@ namespace Utilities_ns
             return false;
         }
 
-        public static List<Employee> GetNonChargingEmployees()
-        {
-            List<Employee> notChargingEmployees = new List<Employee>();
-            foreach (Employee employee in employees)
-            {
-                if (!chargingEmployees.Contains(employee))
-                {
-                    notChargingEmployees.Add(employee);
-                }
-            }
-
-            return notChargingEmployees;
-        }
-
         public static void UpdateNewChargeGoal()
         {
-            chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
+            chargeGoalPercentage = GetAverageBatteryPercentage(BatteryState.notCharging);
         }
 
-        public static Employee GetMaxChargeEmployee(List<Employee> employees)
-        {
-            Employee maxEmployee = null;
-
-            foreach (var e in employees)
-            {
-                if (maxEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage > maxEmployee.ItsCar.ItsBattery.CurrentPercentage)
-                {
-                    maxEmployee = e;
-                }
-            }
-
-            return maxEmployee;
-        }
-
-        public static Employee GetMinChargeEmployee(List<Employee> employees)
+        public static Employee GetMinStateEmployee(BatteryState batteryState)
         {
             Employee minEmployee = null;
 
-            foreach (var e in employees)
-            {
-                if (minEmployee == null || e.ItsCar.ItsBattery.CurrentPercentage < minEmployee.ItsCar.ItsBattery.CurrentPercentage)
-                {
-                    minEmployee = e;
-                }
-            }
+            List<Employee> EmployeesInThatState = EmployeesInState(batteryState);
 
-            return minEmployee;
+            EmployeesInThatState.Sort((Employee x, Employee y) => (int)(x.ItsCar.ItsBattery.CurrentPercentage - y.ItsCar.ItsBattery.CurrentPercentage));
+
+            return EmployeesInThatState[0];
         }
 
-        public static List<Employee> GetNonWaitingEmployees()
-        {
-            List<Employee> returnList = new();
 
-            foreach (Employee e in employees)
+        public static List<Employee> EmployeesInState(BatteryState batteryState)
+        {
+            List<Employee> employeesInState = new();
+
+            foreach (Employee employee in employees)
             {
-                if (!waitingPlugInEmployees.Contains(e) && !waitingUnplugEmployees.Contains(e))
+                if (employee.ItsCar.ItsBattery.State == batteryState)
                 {
-                    returnList.Add(e);
+                    employeesInState.Add(employee);
                 }
             }
+            return employeesInState;
+        }
 
-            return returnList;
+        public static int NumOfEmployeesinState(BatteryState batteryState)
+        {
+            return EmployeesInState(batteryState).Count;
         }
     }
 }
