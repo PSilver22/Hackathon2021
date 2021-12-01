@@ -197,7 +197,7 @@ namespace Main_Window
 
                     foreach (Employee employee in Utilities.employees)
                     {
-                        if (employee.ItsCar.ItsBattery.State == BatteryState.charging)
+                        if (employee.ItsCar.ItsBattery.State == BatteryState.charging || employee.ItsCar.ItsBattery.State == BatteryState.waitingToNotCharge)
                         {
                             Label label = new();
                             label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
@@ -211,13 +211,16 @@ namespace Main_Window
 
         private static void TimeFunction() {
             int timePassed = 0;
+            bool secondStage = false;
 
             while (running)
             { 
                 Thread.Sleep(1000);
 
-                if (!Utilities.ReachedSecondStage())
+                if (!Utilities.ReachedSecondStage() || !secondStage)
                 {
+                    secondStage = false;
+
                     timePassed = 0;
 
                     // if the average percentage has reached the goal
@@ -235,6 +238,8 @@ namespace Main_Window
                                 // add the employee to list of employees waiting for an update
                                 chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
+
+                                secondStage = true;
                             }
                         }
                     }
@@ -249,7 +254,7 @@ namespace Main_Window
 
                         foreach (Employee employee in minEmployees)
                         {
-                            if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge))
+                            if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && (employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
                             {
                                 employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                                 UpdateUpdatedEmployees();
@@ -276,9 +281,8 @@ namespace Main_Window
                             List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations - Utilities.NumOfEmployeesinState(BatteryState.charging));
 
                             foreach (Employee e in minEmployees) {
-                                if (!Utilities.WaitingForUpdate(e) && e.ItsCar.ItsBattery.CurrentPercentage < 100) {
+                                if (!Utilities.WaitingForUpdate(e) && e.ItsCar.ItsBattery.CurrentPercentage != 100 && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge)) {
                                     e.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
-                                    UpdateUpdatedEmployees();
                                 }
                             }
                         }

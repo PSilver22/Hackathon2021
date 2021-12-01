@@ -96,9 +96,8 @@ namespace Utilities_ns
             double time = 0;
             foreach (Employee employee in employees)
             {
-                double capacity = employee.ItsCar.ItsBattery.Capacity;
-                double currentLevel = employee.ItsCar.ItsBattery.CurrentLevel;
-                time += (goalPercentage - currentLevel) / ((capacity - currentLevel) / (chargeRate / 100));
+                double percentageTime = (employee.ItsCar.ItsBattery.Capacity / 100) / (Utilities.chargeRate/60);
+                time += percentageTime * (goalPercentage - employee.ItsCar.ItsBattery.CurrentPercentage);
             }
             time /= employees.Count;
             return time;
