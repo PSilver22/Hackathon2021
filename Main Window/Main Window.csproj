@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Data Structures\Data Structures.csproj" />
     <ProjectReference Include="..\EmailSender\EmailSender.csproj" />
-    <ProjectReference Include="..\Scheduler\Utilities.csproj" />
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

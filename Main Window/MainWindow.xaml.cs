@@ -190,7 +190,7 @@ namespace Main_Window
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             Utilities.waitingEmployeesMutex.ReleaseMutex();
 
-            ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
+            //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
 
         private void PlugInButton_Click(object sender, RoutedEventArgs e) {
@@ -201,14 +201,14 @@ namespace Main_Window
 
                 Utilities.UpdateNewChargeGoal();
 
-                SendExpectedUnplugTime(newChargeEmployee);
+                //SendExpectedUnplugTime(newChargeEmployee);
 
                 Utilities.waitingEmployeesMutex.WaitOne();
                 Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
                 Utilities.waitingEmployeesMutex.ReleaseMutex();
 
-                ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
+                //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
             }
         }
 
@@ -288,7 +288,7 @@ namespace Main_Window
                 else {
                     ++timePassed;
 
-                    if (timePassed >= 120) {
+                    if (timePassed >= 30) {
                         List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(Utilities.employees, Utilities.numChargingStations);
 
                         foreach (Employee employee in Utilities.chargingEmployees) {

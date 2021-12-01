@@ -43,6 +43,8 @@ namespace Utilities_ns
 
         public static List<Employee> GetLowestBatteryLevelEmployees(List<Employee> employeeList, int sizeOfList)
         {
+            employeeList.Sort((Employee x, Employee y) => (int)(x.ItsCar.ItsBattery.CurrentLevel - y.ItsCar.ItsBattery.CurrentLevel));
+
             List<Employee> lowerHalf = new List<Employee>(employeeList);
 
             if (sizeOfList < lowerHalf.Count)
@@ -144,18 +146,12 @@ namespace Utilities_ns
             return time;
         }
 
-        public static bool ReachedSecondStage(List<Employee> employees)
+        public static bool ReachedSecondStage()
         {
-            List<Car> cars = GetCarList(employees);
-            List<Car> lowerCars = GetLowestBatteryLevelCars(cars, numChargingStations);
-            List<Car> upperCars = GetUpperHalfCars(cars, numChargingStations);
+            
+            double timeToChargeToChargeGoal = TimeToChargeInMinutes(chargingEmployees, chargeGoalPercentage);
 
-            double lowerAverage = GetAverageBatteryPercentage(lowerCars);
-            double upperAverage = GetAverageBatteryPercentage(upperCars);
-
-            double timeToChargeToUpperAverage = TimeToChargeInMinutes(lowerAverage, upperAverage);
-
-            return timeToChargeToUpperAverage < 10;
+            return timeToChargeToChargeGoal < 120;
         }
 
         public static bool CarExists(int LicensePlateNumber)
