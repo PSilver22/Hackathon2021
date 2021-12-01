@@ -6,17 +6,18 @@
         xmlns:local="clr-namespace:Main_Window"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200" Closed="Window_Closed">
-    <Grid Name="MainGrid">
-        <Label Content="Employees that need to move their car" Margin="0,20,900,10"/>
-        <ListBox Name="UpdatedEmployees" Margin="0,50,900,10">
+    
+    <Grid Name="MainGrid" RenderTransformOrigin="0.499,0.398">
+        <Label Content="Employees that need to move their car" Width="120" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25"/>
+        <ListBox Name="UpdatedEmployees" Width="200" Height ="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50">
         </ListBox>
 
-        <Label Content="Employees that are charging" Margin="250,20,700,10"/>
-        <ListBox Name="ChargingEmployees" Margin="250,50,700,10">
+        <Label Content="Employees that are charging" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,25"/>
+        <ListBox Name="ChargingEmployees" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,50">
         </ListBox>
 
-        <Label Content="Employees" Margin="485,20,400,10"/>
-        <ListBox Name="EmployeeList" Margin="485,50,400,10">
+        <Label Content="Employees" Width="120" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,25"/>
+        <ListBox Name="EmployeeList" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,50">
         </ListBox>
 
         <Label Content="New Employee" Margin="900,0,69,600" Height="35" FontSize="20"/>
