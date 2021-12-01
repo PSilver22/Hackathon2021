@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace Data_Structures
 {
-    public class Enum
-    {
-        public enum BatteryState
+      public enum BatteryState
         {
             charging,
             notCharging,
             waitingToCharge,
             waitingToNotCharge
         }
-    }
+    
 }
