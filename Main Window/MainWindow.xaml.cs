@@ -40,21 +40,6 @@ namespace Main_Window
             timeThread = new Thread(() => TimeFunction());
 
             timeThread.Start();
-            //ListBoxItem newItem = new ListBoxItem();
-            //StackPanel newItemContent = new StackPanel();
-
-            //Label newLabel = new Label();
-            //newLabel.Content = "Hello";
-
-            //Button button = new Button();
-            //button.Content = "Test";
-
-            //newItemContent.Children.Add(newLabel);
-            //newItemContent.Children.Add(button);
-
-            //newItem.Content = newItemContent;
-
-            //UpdatedEmployees.Items.Add(newItem)"
         }
 
         private void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
@@ -65,7 +50,7 @@ namespace Main_Window
                 return;
             }
 
-            Battery battery = new();
+            Battery battery = new() { State = BatteryState.notCharging };
             Car car = new();
             try
             {
@@ -104,10 +89,10 @@ namespace Main_Window
 
             Utilities.waitingEmployeesMutex.WaitOne();
             
-            List<Car> chargingCars = Utilities.GetCarList(Utilities.chargingEmployees);
+            List<Car> chargingCars = Utilities.GetCarList(BatteryState.charging);
 
             // get the employees with the smallest charge
-            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonChargingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
+            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
 
             if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
             {
@@ -115,9 +100,9 @@ namespace Main_Window
                 {
                     foreach (Employee minEmployee in minEmployees)
                     {
-                        if (!Utilities.waitingPlugInEmployees.Contains(minEmployee) && !Utilities.waitingUnplugEmployees.Contains(minEmployee))
+                        if (!(minEmployee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && !(minEmployee.ItsCar.ItsBattery.State == BatteryState.waitingToNotCharge))
                         {
-                            Utilities.waitingPlugInEmployees.Add(minEmployee);
+                            minEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                         }
                     }
                 }
@@ -126,8 +111,8 @@ namespace Main_Window
                 {
                     if (!Utilities.GetLowestBatteryLevelEmployees(Utilities.GetNonWaitingEmployees(), Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count)).Contains(Utilities.GetMaxChargeEmployee(Utilities.waitingPlugInEmployees)))
                     {
-                        Utilities.waitingPlugInEmployees.Remove(Utilities.GetMaxChargeEmployee(Utilities.waitingPlugInEmployees));
-                        Utilities.waitingPlugInEmployees.Add(Utilities.GetMinChargeEmployee(Utilities.GetNonWaitingEmployees()));
+                        Utilities.GetMaxChargeEmployee(Utilities.waitingPlugInEmployees).ItsCar.ItsBattery.State = BatteryState.notCharging;
+                        Utilities.GetMinChargeEmployee(Utilities.GetNonWaitingEmployees()).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                     }
                 }
                 UpdateUpdatedEmployees();
@@ -181,12 +166,12 @@ namespace Main_Window
 
         private void UnplugButton_Click(object sender, RoutedEventArgs e)
         {
-            Utilities.chargingEmployees = Utilities.chargingEmployees.Where(e => e.Name != ((Button)sender).Name.Replace('_', ' ')).ToList();
-
+            Utilities.employees.Find(e => e.Name == ((Button)sender).Name.Replace('_', ' ')).ItsCar.ItsBattery.State = BatteryState.notCharging;
+            
             Utilities.UpdateNewChargeGoal();
 
             Utilities.waitingEmployeesMutex.WaitOne();
-            Utilities.waitingUnplugEmployees.Where(e => e.Name != ((Button)sender).Name.Replace('_', ' '));
+            Utilities.employees.Find(e => e.Name == ((Button)sender).Name.Replace('_', ' ')).ItsCar.ItsBattery.State = BatteryState.notCharging;
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
             Utilities.waitingEmployeesMutex.ReleaseMutex();
 
@@ -197,22 +182,18 @@ namespace Main_Window
             Employee? newChargeEmployee = Utilities.employees.Find(e => e.Name == ((Button) sender).Name.Replace('_', ' '));
 
             if (newChargeEmployee != null) {
-                Utilities.chargingEmployees.Add(newChargeEmployee);
+                newChargeEmployee.ItsCar.ItsBattery.State = BatteryState.charging;
 
                 Utilities.UpdateNewChargeGoal();
+                UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
 
                 //SendExpectedUnplugTime(newChargeEmployee);
-
-                Utilities.waitingEmployeesMutex.WaitOne();
-                Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
-                UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
-                Utilities.waitingEmployeesMutex.ReleaseMutex();
 
                 //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
             }
         }
 
-        private static void DisplayChargingEmployees(List<Employee> EmployeesThatAreCharging)
+        private static void DisplayChargingEmployees()
         {
             try
             {
@@ -220,11 +201,14 @@ namespace Main_Window
                 {
                     main.ChargingEmployees.Items.Clear();
 
-                    foreach (Employee employee in EmployeesThatAreCharging)
+                    foreach (Employee employee in Utilities.employees)
                     {
-                        Label label = new();
-                        label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
-                        main.ChargingEmployees.Items.Add(label);
+                        if (employee.ItsCar.ItsBattery.State == BatteryState.charging)
+                        {
+                            Label label = new();
+                            label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
+                            main.ChargingEmployees.Items.Add(label);
+                        }
                     }
                 });
             }
@@ -237,18 +221,16 @@ namespace Main_Window
             while (running)
             { 
                 Thread.Sleep(1000);
-                
-                List<Car> chargingCars = Utilities.GetCarList(Utilities.chargingEmployees);
 
                 if (!Utilities.ReachedSecondStage())
                 {
                     timePassed = 0;
 
                     // if the average percentage has reached the goal
-                    if (Utilities.GetAverageBatteryPercentage(chargingCars) >= Utilities.chargeGoalPercentage)
+                    if (Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage)
                     {
                         // get the next group of cars
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(Utilities.employees, Utilities.numChargingStations);
+                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(Utilities.numChargingStations);
 
                         // check each charging employee
                         foreach (Employee chargingEmployee in Utilities.chargingEmployees)

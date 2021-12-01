@@ -11,7 +11,8 @@ namespace Data_Structures
         public double Capacity { get; set; }
         public double CurrentLevel { get; set; }
 
-        public Enum.BatteryState State {get; set;} 
+        public BatteryState State {get; set;}
+
         public double CurrentPercentage { get => (CurrentLevel / Capacity) * 100; }
 
         /// <summary>
