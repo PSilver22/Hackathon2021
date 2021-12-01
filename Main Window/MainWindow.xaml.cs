@@ -38,6 +38,8 @@ namespace Main_Window
 
         private static List<Employee> employees = new();
 
+        private volatile static bool running = true;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -122,7 +124,7 @@ namespace Main_Window
 
         private static void TimeFunction() {
 
-            while (true)
+            while (running)
             {
                 Thread.Sleep(1000);
 
@@ -193,9 +195,9 @@ namespace Main_Window
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            timeThread?.Join();
+            running = false;
 
-            base.OnClosed(e);
+            timeThread?.Join();
         }
 
         private static bool WaitingForUpdate(Employee e) {
