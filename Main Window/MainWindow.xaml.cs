@@ -189,6 +189,8 @@ namespace Main_Window
 
                 Utilities.UpdateNewChargeGoal();
 
+                SendExpectedUnplugTime(newChargeEmployee, )
+
                 Utilities.waitingEmployeesMutex.WaitOne();
                 Utilities.waitingPlugInEmployees.Remove(newChargeEmployee);
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button) sender).Name));
@@ -540,6 +542,25 @@ namespace Main_Window
         private static string CarEmailSubject()
         {
             return "Update to your cars status in the charging station";
+        }
+
+        private static void SendExpectedUnplugTime(List<Employee> employees, double GoalAverage)
+        {
+            double expectedtime = Utilities.TimeToChargeInMinutes(loweraverage, upperaverage);
+
+            EmailSender.SendEmail(employee.EmailAdress, ETAEmailSubject(), ETAEmailBody(expectedtime));
+        }
+
+        private static string ETAEmailBody(double ETA)
+        {
+            return "Thank you for plugging in your car.\n" +
+                "You can expect to unplug your car in " + ETA
+                + " minutes.";
+        }
+
+        private static string ETAEmailSubject()
+        {
+            return "ETA for unplug";
         }
     }
 }

@@ -129,10 +129,17 @@ namespace Utilities_ns
             return cars;
         }
 
-        public static double TimeToChargeInMinutes(double lowerAverage, double upperAverage)
+        public static double TimeToChargeInMinutes(List<Employee> employees, double goalPercentage)
         {
-            double BatteryDifference = upperAverage - lowerAverage;
-            return BatteryDifference / chargeRate / 60;
+            double time = 0;
+            foreach(Employee employee in employees)
+            {
+                double capacity = employee.ItsCar.ItsBattery.Capacity;
+                double currentLevel = employee.ItsCar.ItsBattery.CurrentLevel;
+                time += (goalPercentage - currentLevel) / ((capacity - currentLevel) / (chargeRate / 100)); 
+            }
+            time /= employees.Count;
+            return time;
         }
 
         public static bool ReachedSecondStage(List<Employee> employees)
