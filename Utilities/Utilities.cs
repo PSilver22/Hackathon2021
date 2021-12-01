@@ -7,7 +7,7 @@ namespace Utilities_ns
 {
     public class Utilities
     {
-        public static int numChargingStations = 3;
+        public static int numChargingStations = 2;
         public static double chargeRate = 60;
         public static double chargeGoalPercentage = 10;
 
