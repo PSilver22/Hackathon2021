@@ -114,7 +114,6 @@ namespace Main_Window
                     }
                 }
                 UpdateUpdatedEmployees();
-                EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
             }
 
             Utilities.UpdateNewChargeGoal();
