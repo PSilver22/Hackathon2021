@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data Structures\Data Structures.csproj" />
-    <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
+    <ProjectReference Include="..\EmailSender\EmailSender.csproj" />
+    <ProjectReference Include="..\Scheduler\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

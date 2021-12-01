@@ -10,5 +10,6 @@ namespace Data_Structures
     {
         public String Name { get; set; }
         public Car ItsCar { get; set; }
+        public string EmailAdress { get; set; }
     }
 }

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Threading;
 using Data_Structures;
 using Utilities_ns;
+using EmailSender_ns;
 
 namespace Main_Window
 {
@@ -57,27 +58,29 @@ namespace Main_Window
 
         private void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (Name.Text == "Name")
+            if (Name.Text == "Name" || EmailAddress.Text == "Email Address")
             {
-                LicensePlate.Text = "License Plate #";
-                BatteryCapacity.Text = "Battery Capacity";
-                CurrentBattery.Text = "Current Battery";
+                ResetLabels();
                 return;
             }
+
             Battery battery = new();
             Car car = new();
             try
             {
                 battery.Capacity = double.Parse(BatteryCapacity.Text);
                 battery.CurrentLevel = double.Parse(CurrentBattery.Text);
-                car.LicensePlateNumber = int.Parse(LicensePlate.Text);
+                int licensePlateNumber = int.Parse(LicensePlate.Text);
+                if (Utilities.CarExists(licensePlateNumber))
+                {
+                    ResetLabels();
+                    return;
+                }
+                car.LicensePlateNumber = licensePlateNumber;
             }
             catch(FormatException)
             {
-                LicensePlate.Text = "License Plate #";
-                BatteryCapacity.Text = "Battery Capacity";
-                CurrentBattery.Text = "Current Battery";
-                Name.Text = "Name";
+                ResetLabels();
                 return;
             }
             
@@ -86,6 +89,15 @@ namespace Main_Window
             Employee employee = new();
             employee.Name = Name.Text.Replace('_', ' ');
             employee.ItsCar = car;
+
+            string emailAddress = EmailAddress.Text;
+            if (!EmailSender.IsValidEmail(emailAddress))
+            {
+                ResetLabels();
+                return;
+            }
+
+            employee.EmailAdress = emailAddress;
 
             Utilities.employees.Add(employee);
 
@@ -114,10 +126,16 @@ namespace Main_Window
 
             UpdateEmployeeList();
 
+            ResetLabels();
+        }
+
+        private void ResetLabels()
+        {
+            Name.Text = "Name";
+            EmailAddress.Text = "Email Address";
             LicensePlate.Text = "License Plate #";
             BatteryCapacity.Text = "Battery Capacity";
             CurrentBattery.Text = "Current Battery";
-            Name.Text = "Name";
         }
 
         private void UpdateEmployeeList() {
@@ -322,6 +340,7 @@ namespace Main_Window
                         case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
                         case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
                         case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                        case "EmailAddress": textBox.Text = "Email Address"; break;
                     }
                 }
             }
@@ -343,6 +362,7 @@ namespace Main_Window
                         case "BatteryCapacity": textBox.Text = "Battery Capacity"; break;
                         case "NumChargingStations": textBox.Text = "# Charging Stations"; break;
                         case "ChargingRate": textBox.Text = "Charging Rate"; break;
+                        case "EmailAddress": textBox.Text = "Email Address"; break;
                     }
                 }
             }

@@ -129,23 +129,38 @@ namespace Utilities_ns
             return cars;
         }
 
-        public static List<Employee> GetNonChargingEmployees() {
-            List<Employee> notChargingEmployees = new List<Employee>();
-            foreach (Employee employee in employees)
+        public static double TimeToChargeInMinutes(double lowerAverage, double upperAverage)
+        {
+            double BatteryDifference = upperAverage - lowerAverage;
+            return BatteryDifference / chargeRate / 60;
+        }
+
+        public static bool ReachedSecondStage(List<Employee> employees)
+        {
+            List<Car> cars = GetCarList(employees);
+            List<Car> lowerCars = GetLowestBatterylevelCars(cars, numChargingStations);
+            List<Car> upperCars = GetUpperHalfCars(cars, numChargingStations);
+
+            double lowerAverage = GetAverageBatteryPercentage(lowerCars);
+            double upperAverage = GetAverageBatteryPercentage(upperCars);
+
+            double timeToChargeToUpperAverage = TimeToChargeInMinutes(lowerAverage, upperAverage);
+
+            return timeToChargeToUpperAverage >= 120;
+        }
+
+        public static bool CarExists(int LicensePlateNumber)
+        {
+            foreach(Employee employee in employees)
             {
-                if (!chargingEmployees.Contains(employee))
+                if (employee.ItsCar.LicensePlateNumber == LicensePlateNumber)
                 {
-                    notChargingEmployees.Add(employee);
+                    return true;
                 }
             }
-
-            return notChargingEmployees;
+            return false;
         }
 
-        public static void UpdateNewChargeGoal()
-        {
-            chargeGoalPercentage = GetAverageBatteryPercentage(GetCarList(GetNonChargingEmployees()));
-        }
     }
 }
 
