@@ -10,17 +10,16 @@ namespace EmailSender_ns
     {
         public static string emailAddress;
         public static string password;
-        public static void readInfo(string filepath)
+        public static NetworkCredential readInfo(string filepath)
         {
             string[] lines = System.IO.File.ReadAllLines(@filepath);
-            emailAddress = lines[0];
-            password = lines[1];
+            return new NetworkCredential(lines[0], lines[1]);
         }
 
         public SmtpClient smtpClient = new("smtp.gmail.com")
         {
             Port = 587,
-            Credentials = new NetworkCredential(emailAddress, password),
+            Credentials = readInfo(@"C:\Users\a3210\Machon Lev\Hackathon\EmailSender\EmailInfo.txt"),
             EnableSsl = true,
         };
 
