@@ -219,7 +219,7 @@ namespace Main_Window
 
             while (running)
             { 
-                Thread.Sleep(1000);
+                Thread.Sleep(250);
 
                 if (!Utilities.ReachedSecondStage() || !secondStage)
                 {
@@ -468,7 +468,7 @@ namespace Main_Window
 
                 Label label = new();
 
-                label.Content = "Charge Rate: " + Utilities.chargeRate + " mAh";
+                label.Content = "Charge Rate: " + Utilities.chargeRate + " Amp";
                 label.FontSize += 5;
 
                 label.Margin = new Thickness(901.5, 360, 0, 0);
