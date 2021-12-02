@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Main_Window"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200" Closed="Window_Closed">
+        Title="Skejoule" Height="700" Width="1200" Closed="Window_Closed">
 
     <Grid Name="MainGrid" RenderTransformOrigin="0.499,0.398" Background="#FF60F50A">
         <Label Content="Control Panel" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25" FontSize="15"/>
