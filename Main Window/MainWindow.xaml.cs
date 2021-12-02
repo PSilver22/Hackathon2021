@@ -470,7 +470,7 @@ namespace Main_Window
                 label.Content = "Charge Rate: " + Utilities.chargeRate + " mAh";
                 label.FontSize += 5;
 
-                label.Margin = new Thickness(901.5, 350, 0, 0);
+                label.Margin = new Thickness(901.5, 360, 0, 0);
                 label.Width = 175;
                 label.Height = 50;
                 label.HorizontalAlignment = HorizontalAlignment.Left;
