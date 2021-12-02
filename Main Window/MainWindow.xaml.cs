@@ -171,7 +171,6 @@ namespace Main_Window
 
             Utilities.GetMinStateEmployee(BatteryState.notCharging).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
             UpdateUpdatedEmployees();
-
             //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
 
@@ -183,7 +182,6 @@ namespace Main_Window
 
                 Utilities.UpdateNewChargeGoal();
                 UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
-
                 //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
             }
         }
@@ -224,77 +222,72 @@ namespace Main_Window
 
                     timePassed = 0;
 
-                    // if the average percentage has reached the goal
-                    if (Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage)
-                    {
-                        // get the next group of cars
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.allStates, Utilities.numChargingStations);
 
-                        // check each charging employee
-                        foreach (Employee chargingEmployee in Utilities.EmployeesInState(BatteryState.charging))
-                        {
-                            // if the employee is not already waiting to be updated and (the car doesn't still need charge or the cars battery is at 100)
-                            if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100))
-                            {
-                                // add the employee to list of employees waiting for an update
-                                chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
-                                UpdateUpdatedEmployees();
-                                EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
-
-                                secondStage = true;
-                            }
-                        }
-                    }
-
-                    List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
-
-                    // if the number of cars charging is less than the number of chargers and the number of cars charging is less than the number of total cars
-                    if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
-                    {
-                        // get the employees with the smallest charge
-                        List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
-
-                        foreach (Employee employee in minEmployees)
-                        {
-                            if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && (employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
-                            {
-                                employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
-                                UpdateUpdatedEmployees();
-                                EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
-                            }
-                        }
-                    }
+                    secondStage = UpdateEmployeeUnplugPrompts();
+                    UpdateEmployeePlugInPrompts();
                 }
 
                 else {
                     ++timePassed;
 
-                    if (timePassed >= 30) {
-                        List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Utilities.numChargingStations);
-
-                        foreach (Employee employee in Utilities.EmployeesInState(BatteryState.charging)) {
-                            if (!Utilities.WaitingForUpdate(employee) && (!possibleChanges.Contains(employee) || employee.ItsCar.ItsBattery.CurrentPercentage == 100))
-                            {
-                                employee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
-                                UpdateUpdatedEmployees();
-                            }
-                        }
-
-                        if (Utilities.NumOfEmployeesinState(BatteryState.charging) < Utilities.numChargingStations) {
-                            List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.charging, Utilities.numChargingStations - Utilities.NumOfEmployeesinState(BatteryState.charging));
-
-                            foreach (Employee e in minEmployees) {
-                                if (!Utilities.WaitingForUpdate(e) && e.ItsCar.ItsBattery.CurrentPercentage != 100 && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge)) {
-                                    e.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
-                                }
-                            }
-                        }
+                    if (timePassed >= 30)
+                    {
+                        UpdateEmployeeUnplugPrompts();
+                        UpdateEmployeePlugInPrompts();
                     }
                 }
 
                 Utilities.UpdateBatterylevel(1);
                 DisplayChargingEmployees();
             }
+        }
+
+        private static void UpdateEmployeePlugInPrompts()
+        {
+            List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
+
+            // if the number of cars charging is less than the number of chargers and the number of cars charging is less than the number of total cars
+            if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
+            {
+                // get the employees with the smallest charge
+                List<Employee> minEmployees = Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count));
+
+                foreach (Employee employee in minEmployees)
+                {
+                    if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && (employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
+                    {
+                        employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+                        UpdateUpdatedEmployees();
+                        EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
+                    }
+                }
+            }
+        }
+
+        private static bool UpdateEmployeeUnplugPrompts()
+        {
+            // if the average percentage has reached the goal
+            if (Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage)
+            {
+                // get the next group of cars
+                List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.allStates, Utilities.numChargingStations);
+
+                // check each charging employee
+                foreach (Employee chargingEmployee in Utilities.EmployeesInState(BatteryState.charging))
+                {
+                    // if the employee is not already waiting to be updated and (the car doesn't still need charge or the cars battery is at 100)
+                    if (!Utilities.WaitingForUpdate(chargingEmployee) && (!possibleChanges.Contains(chargingEmployee) || chargingEmployee.ItsCar.ItsBattery.CurrentPercentage == 100))
+                    {
+                        // add the employee to list of employees waiting for an update
+                        chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
+                        UpdateUpdatedEmployees();
+                        EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static void UpdateUpdatedEmployees() {
