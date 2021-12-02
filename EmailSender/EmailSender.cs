@@ -26,10 +26,18 @@ namespace EmailSender_ns
             EnableSsl = true,
         };
 
-        public void SendEmail(string receiver, string subject, string body)
+        public async void SendEmail(string receiver, string subject, string body)
         {
             string emailAddress = System.IO.File.ReadAllLines(@"C:\Users\a3210\Machon Lev\Hackathon\EmailSender\EmailInfo.txt")[0];
-            smtpClient.Send(emailAddress, receiver, subject, body);
+
+            try
+            { 
+                smtpClient.SendAsync(emailAddress, receiver, subject, body, "test message");
+            }
+            catch(Exception)
+            {
+
+            }
         }
 
         public static bool IsValidEmail(string email)

@@ -171,7 +171,9 @@ namespace Main_Window
             Utilities.employees.Find(e => e.Name == ((Button)sender).Name.Replace('_', ' ')).ItsCar.ItsBattery.State = BatteryState.notCharging;
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
 
-            Utilities.GetMinStateEmployee(BatteryState.notCharging).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+            Employee minEmployee = Utilities.GetMinStateEmployee(BatteryState.notCharging);
+            minEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+            EmailSender.SendEmail(minEmployee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(minEmployee));
             UpdateUpdatedEmployees();
             //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
@@ -257,11 +259,10 @@ namespace Main_Window
 
                 foreach (Employee employee in minEmployees)
                 {
-                    if (!(employee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && (employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
+                    if ((employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
                     {
                         employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                         UpdateUpdatedEmployees();
-                        EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
                     }
                 }
             }
