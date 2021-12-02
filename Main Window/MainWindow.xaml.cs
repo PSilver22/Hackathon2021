@@ -128,6 +128,8 @@ namespace Main_Window
                 ListBoxItem newItem = new ListBoxItem();
                 StackPanel newContent = new StackPanel() { Name="EmployeeInfo" };
                 Label nameLabel = new Label() { Name = "NameLabel", Content = employee.Name.Replace('_', ' ') };
+                nameLabel.FontSize += 5;
+
 
                 newContent.Children.Add(nameLabel);
 
@@ -189,6 +191,7 @@ namespace Main_Window
                         {
                             Label label = new();
                             label.Content = "Name: " + employee.Name + "\nBattery Level: " + Math.Round(employee.ItsCar.ItsBattery.CurrentPercentage, 2) + "%";
+                            label.FontSize += 5;
                             main.ChargingEmployees.Items.Add(label);
                         }
                     }
@@ -304,6 +307,7 @@ namespace Main_Window
 
             Label label = new();
             label.Content = text;
+            label.FontSize += 5; 
 
             StackPanel stackPanel = new();
             stackPanel.Children.Add(label);
@@ -312,6 +316,7 @@ namespace Main_Window
             ListBoxItem listBoxItem = new();
             listBoxItem.Content = stackPanel;
             listBoxItem.Name = text.Replace(' ', '_');
+            listBoxItem.Background = new SolidColorBrush(Color.FromRgb(0xB3,0xCF,0xE2));
 
             list.Items.Add(listBoxItem);
         }
@@ -414,10 +419,11 @@ namespace Main_Window
                 Label label = new();
 
                 label.Content = "Number of Charging Stations: " + Utilities.numChargingStations;
+                label.FontSize += 5;
 
                 label.Margin = new Thickness(901.5, 325, 00, 000);
-                label.Width = 180;
-                label.Height = 30;
+                label.Width = 250;
+                label.Height = 50;
                 label.HorizontalAlignment = HorizontalAlignment.Left;
                 label.VerticalAlignment = VerticalAlignment.Top;
                 
@@ -452,10 +458,11 @@ namespace Main_Window
                 Label label = new();
 
                 label.Content = "Charge Rate: " + Utilities.chargeRate + " mAh";
+                label.FontSize += 5;
 
-                label.Margin = new Thickness(901.5, 350, 0, 0);
-                label.Width = 135;
-                label.Height = 30;
+                label.Margin = new Thickness(901.5, 360, 0, 0);
+                label.Width = 175;
+                label.Height = 50;
                 label.HorizontalAlignment = HorizontalAlignment.Left;
                 label.VerticalAlignment = VerticalAlignment.Top;
 
@@ -525,7 +532,7 @@ namespace Main_Window
 
                 Employee? updateEmployee = Utilities.employees.Find(e => e.Name == employeeName);
 
-                content.Children.Add(new Label() { Content = (Math.Round(updateEmployee.ItsCar.ItsBattery.CurrentPercentage, 2)).ToString() + "%", Visibility = Visibility.Visible });
+                content.Children.Add(new Label() { Content = (Math.Round(updateEmployee.ItsCar.ItsBattery.CurrentPercentage, 2)).ToString() + "%", Visibility = Visibility.Visible, FontSize = 17 });
             }
         }
 
