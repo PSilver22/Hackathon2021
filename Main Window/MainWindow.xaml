@@ -7,18 +7,17 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200" Closed="Window_Closed">
 
-    <Grid Name="MainGrid" RenderTransformOrigin="0.499,0.398">
-        <Label Content="Control Panel" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25"/>
-        <ListBox Name="UpdatedEmployees" Width="200" Height ="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50">
+    <Grid Name="MainGrid" RenderTransformOrigin="0.499,0.398" Background="#FF60F50A">
+        <Label Content="Control Panel" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25" FontSize="15"/>
+        <ListBox Name="UpdatedEmployees" Width="200" Height ="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50" Background="#FF199B0C">
         </ListBox>
 
-        <Label Content="Employees that are charging" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,25"/>
-        <ListBox Name="ChargingEmployees" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,50">
+        <Label Content="Active Charging Data" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,25" FontSize="15"/>
+        <ListBox Name="ChargingEmployees" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="250,50" Background="#FF199B0C">
         </ListBox>
 
-        <Label Content="Employees" Width="120" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,25"/>
-        <ListBox Name="EmployeeList" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,50">
-        </ListBox>
+        <Label Content="Employee Data" Width="120" Height="35" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,25" FontSize="15"/>
+        <ListBox Name="EmployeeList" Width="200" Height="550" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="490,50" Background="#FF199B0C"/>
 
         <Label Content="New Employee" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="900,30,0,0" Width="200" Height="35" FontSize="20"/>
         <TextBox Name="Name" TextWrapping="NoWrap" Text="Name" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="120" Margin="911,65,0,0" MaxLines="1" GotFocus="TextBoxGotFocus" GotKeyboardFocus="TextBoxGotKeyboardFocus" LostFocus="TextBoxLostFocus" LostKeyboardFocus="TextBoxKeyboardLostFocus"/>

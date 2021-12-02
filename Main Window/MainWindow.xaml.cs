@@ -267,6 +267,7 @@ namespace Main_Window
                     }
                 }
 
+
                 else {
                     ++timePassed;
 
@@ -278,6 +279,7 @@ namespace Main_Window
                             {
                                 employee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
                                 UpdateUpdatedEmployees();
+                                EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(employee));
                             }
                         }
 
@@ -287,6 +289,7 @@ namespace Main_Window
                             foreach (Employee e in minEmployees) {
                                 if (!Utilities.WaitingForUpdate(e) && e.ItsCar.ItsBattery.CurrentPercentage != 100 && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge)) {
                                     e.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+                                    EmailSender.SendEmail(e.EmailAdress, CarEmailSubject(), PluginCarEmailBody(e));
                                 }
                             }
                         }
