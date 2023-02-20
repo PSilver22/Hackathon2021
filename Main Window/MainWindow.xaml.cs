@@ -94,18 +94,7 @@ namespace Main_Window
 
             if (chargingCars.Count < Utilities.numChargingStations && chargingCars.Count < Utilities.employees.Count)
             {
-                if (Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) < Utilities.numChargingStations && Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) < Utilities.employees.Count)
-                {
-                    foreach (Employee minEmployee in minEmployees)
-                    {
-                        if (!(minEmployee.ItsCar.ItsBattery.State == BatteryState.waitingToCharge) && !(minEmployee.ItsCar.ItsBattery.State == BatteryState.waitingToNotCharge))
-                        {
-                            minEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
-                        }
-                    }
-                }
-
-                else
+                if (UpdateEmployeePlugInPrompts())
                 {
                     if (!Utilities.GetLowestBatteryLevelEmployees(BatteryState.notCharging, Math.Min(Utilities.employees.Count - chargingCars.Count, Utilities.numChargingStations - chargingCars.Count)).Contains(Utilities.GetMaxStateEmployee(BatteryState.waitingToCharge)))
                     {
@@ -113,7 +102,7 @@ namespace Main_Window
                         Utilities.GetMinStateEmployee(BatteryState.notCharging).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
                     }
                 }
-                UpdateUpdatedEmployees();
+                UpdateControlPanel();
             }
 
             Utilities.UpdateNewChargeGoal();
@@ -171,10 +160,15 @@ namespace Main_Window
             Utilities.employees.Find(e => e.Name == ((Button)sender).Name.Replace('_', ' ')).ItsCar.ItsBattery.State = BatteryState.notCharging;
             UpdatedEmployees.Items.RemoveAt(GetItemIndex(UpdatedEmployees, ((Button)sender).Name));
 
+<<<<<<< HEAD
             Employee minEmployee = Utilities.GetMinStateEmployee(BatteryState.notCharging);
             minEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
             EmailSender.SendEmail(minEmployee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(minEmployee));
             UpdateUpdatedEmployees();
+=======
+            Utilities.GetMinStateEmployee(BatteryState.notCharging).ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+            UpdateControlPanel();
+>>>>>>> 515657dd8412770190d1552c4e3e06e97c329870
             //ETA.Content = "Charging estimated end time: " + DateTime.Now.AddMinutes(Utilities.TimeToChargeInMinutes(Utilities.chargingEmployees, Utilities.chargeGoalPercentage)).ToString();
         }
 
@@ -227,19 +221,13 @@ namespace Main_Window
 
                     timePassed = 0;
 
-
-                    secondStage = UpdateEmployeeUnplugPrompts();
-                    UpdateEmployeePlugInPrompts();
+                    secondStage = UpdateEmployeeUnplugPrompts(timePassed);
                 }
 
                 else {
                     ++timePassed;
 
-                    if (timePassed >= 30)
-                    {
-                        UpdateEmployeeUnplugPrompts();
-                        UpdateEmployeePlugInPrompts();
-                    }
+                    UpdateEmployeeUnplugPrompts(timePassed);
                 }
 
                 Utilities.UpdateBatterylevel(1);
@@ -247,7 +235,7 @@ namespace Main_Window
             }
         }
 
-        private static void UpdateEmployeePlugInPrompts()
+        private static bool UpdateEmployeePlugInPrompts()
         {
             List<Car> chargingCars = Utilities.GetCarListOfState(BatteryState.charging);
 
@@ -262,16 +250,28 @@ namespace Main_Window
                     if ((employee.ItsCar.ItsBattery.CurrentPercentage != 100) && Utilities.numChargingStations > Utilities.NumOfEmployeesinState(BatteryState.charging) + Utilities.NumOfEmployeesinState(BatteryState.waitingToCharge) + Utilities.NumOfEmployeesinState(BatteryState.waitingToNotCharge))
                     {
                         employee.ItsCar.ItsBattery.State = BatteryState.waitingToCharge;
+<<<<<<< HEAD
                         UpdateUpdatedEmployees();
+=======
+                        UpdateControlPanel();
+                        EmailSender.SendEmail(employee.EmailAdress, CarEmailSubject(), PluginCarEmailBody(employee));
+>>>>>>> 515657dd8412770190d1552c4e3e06e97c329870
                     }
                 }
+
+                return false;
             }
+
+            else { return true; }
         }
 
-        private static bool UpdateEmployeeUnplugPrompts()
+        private static bool UpdateEmployeeUnplugPrompts(int timePassed)
         {
+            bool reachedStageTwo = Utilities.ReachedSecondStage();
+
             // if the average percentage has reached the goal
-            if (Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage)
+            if ((Utilities.GetAverageBatteryPercentage(BatteryState.charging) >= Utilities.chargeGoalPercentage && !reachedStageTwo) ||
+                (timePassed > 120 && reachedStageTwo))
             {
                 // get the next group of cars
                 List<Employee> possibleChanges = Utilities.GetLowestBatteryLevelEmployees(BatteryState.allStates, Utilities.numChargingStations);
@@ -284,7 +284,7 @@ namespace Main_Window
                     {
                         // add the employee to list of employees waiting for an update
                         chargingEmployee.ItsCar.ItsBattery.State = BatteryState.waitingToNotCharge;
-                        UpdateUpdatedEmployees();
+                        UpdateControlPanel();
                         EmailSender.SendEmail(chargingEmployee.EmailAdress, CarEmailSubject(), UnplugCarEmailBody(chargingEmployee));
                         return true;
                     }
@@ -294,7 +294,7 @@ namespace Main_Window
             return false;
         }
 
-        private static void UpdateUpdatedEmployees() {
+        private static void UpdateControlPanel() {
             main.Dispatcher.Invoke(() => {
                 main.UpdatedEmployees.Items.Clear();
 

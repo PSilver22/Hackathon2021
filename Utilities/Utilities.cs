@@ -145,9 +145,13 @@ namespace Utilities_ns
 
             List<Employee> EmployeesInThatState = EmployeesInState(batteryState);
 
+            if (EmployeesInThatState.Count == 0) {
+                return null;
+            }
+
             EmployeesInThatState.Sort((Employee x, Employee y) => (int)(x.ItsCar.ItsBattery.CurrentPercentage - y.ItsCar.ItsBattery.CurrentPercentage));
 
-            return EmployeesInThatState[EmployeesInThatState.Count - 1];
+            return EmployeesInThatState[^1];
         }
 
         public static List<Employee> EmployeesInState(BatteryState batteryState)
